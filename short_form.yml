@@ -1,0 +1,87 @@
+# Short-form compression for the Whole-Model View (aimaturitymodels.com)
+#
+# One sentence per dimension and level, keyed under dimensions.D<N>.levels.<Level>,
+# for the dimensions this model writes itself: D4, D5, D6, D7, D8, D9, D11.
+# D1, D2, D3, D10 are inherited by reference, so their cells are their sources' own:
+# D1-D3 from the SDLC repository's short_form.yml at v1.4.1, D10 from the EA
+# repository's short_form.yml at v1.1.2. They are not restated here.
+#
+# Every cell is the per-level summary ratified with the matrix, carried verbatim.
+# Dimension titles are the matrix's own headings, not authored here.
+#
+# `flag`, where present, carries one of the two open questions the matrix's review
+# boundaries ship as visible flags. It is not a maturity judgment. Render it; do
+# not drop it.
+
+version: "1.0.0"
+source_matrix_version: "1.0.0"
+source_matrix_commit: "d7b27935472680d77d121c331adf3c71ac79068e"
+
+dimensions:
+  D4:
+    title: "Knowledge corpus & standing"
+    levels:
+      A: "Scattered knowledge; AI context assembled individually."
+      B: "Governed documents with standing; humans maintain, AI checks."
+      C: "Agents maintain structured knowledge; views are generated."
+      D: "Shared operating corpus; renderings trace to standing."
+      E: "Usage evidence drives authorized corpus correction."
+
+  D5:
+    title: "Messaging, content & proof"
+    flag: "the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from."
+    levels:
+      A: "Asset by asset; claims and wording drift."
+      B: "Owned framework; claims and translated terms have approved wording."
+      C: "Structured claims and wording; AI checks at authorship."
+      D: "Other functions build from shared claim and wording records."
+      E: "Response evidence revises messages, wording, and proof."
+
+  D6:
+    title: "Sales & partner enablement"
+    flag: "the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from."
+    levels:
+      A: "Event-driven kits; stale personal copies."
+      B: "Standard kit on a cadence; usage unmeasured."
+      C: "Always-current library; governed field assistant."
+      D: "Guidance surfaces in the flow of deals."
+      E: "Deal evidence drives enablement updates; effects measured."
+
+  D7:
+    title: "Launch communication & readiness"
+    flag: "the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from."
+    levels:
+      A: "Ad hoc launches; readiness unknown."
+      B: "Tiers, checklist, manual go or no-go."
+      C: "Readiness tracked live against release state."
+      D: "One shared readiness record; the release decision reads it."
+      E: "Communication follows actual availability."
+
+  D8:
+    title: "Customer adoption communication"
+    flag: "the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from."
+    levels:
+      A: "Sporadic release notes; reactive education."
+      B: "Defined cadence and role-based formats."
+      C: "Always-current guidance; broadcast by segment."
+      D: "Guidance targeted by actual adoption state."
+      E: "Communication tested against adoption change."
+
+  D9:
+    title: "Market-response learning"
+    flag: "D9 is informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention."
+    levels:
+      A: "Anecdotal response; individual AI summaries."
+      B: "Scheduled AI-assisted reviews link evidence to context."
+      C: "Standing response learning; cross-functional routing is manual."
+      D: "Shared learning routes evidence to accountable correction paths."
+      E: "Responses inform adjustments; their effects feed back."
+
+  D11:
+    title: "Governance, delegation & authority"
+    levels:
+      A: "Implicit rights; drafting and publishing blur."
+      B: "Delegations name actors, actions, surfaces, and limits."
+      C: "Automated checks; enforcement tested by attempt."
+      D: "Runtime authority mediation; exclusions declared."
+      E: "Boundary evidence informs endorsed authority changes."
