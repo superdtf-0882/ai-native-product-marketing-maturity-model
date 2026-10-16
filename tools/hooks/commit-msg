@@ -1,0 +1,477 @@
+#!/bin/sh
+# Work Item SOP -- ring 2. SOURCE OF RECORD; copies live in each declared
+# public repository as tools/hooks/commit-msg.
+#
+# Ruled by DT2 (briefs/2026-09-12-work-item-reliability/08-DT2 §2), ratified
+# "I ratify stages 2-4 as amended by 08-DT2 -- David Facer, 9/11/2026".
+#
+# STAGE IS PER SURFACE AND IS READ, NOT WRITTEN HERE. The fourth field of
+# .work-item-surfaces -- work_item_enforced -- decides it for the surface this
+# invocation is running on:
+#
+#   false or absent -> STAGE 3. Warns. Refuses nothing. Exits 0.
+#   true            -> STAGE 4. Warns and REFUSES. Exits 1.
+#
+# THIS HOOK STATES ITS MODE ON EVERY WARNING IT PRINTS. A control whose output
+# cannot be read against its behaviour is a control nobody can check.
+#
+# WHY THE MODE IS A FIELD AND NOT A FLAG IN THIS FILE. Stage 4 takes a SEPARATE
+# SIGNATURE PER SURFACE, and this file is copied byte-identically into every
+# declared repository -- so there is no line here that could say "enforced on
+# two of eleven" without forking the copies. Making enforcement a generated
+# corpus field keeps one hook, keeps the copies identical, and makes a
+# per-surface signature what this practice already knows how to record: a
+# signature on a corpus row. Ruled by DT2 in
+# briefs/2026-09-16-reconstitution-run/27-DT2 section 1, on the RULE-9
+# consultation requested in 26-CC.
+#
+# ENFORCED SINCE 2026-09-19 on two surfaces, signed "I enforce
+# ai-native-ea-maturity-model and aimaturitymodels -- David Facer 9/19/2026",
+# after the stage 4 ratification of the day before. WHICH surfaces are enforced
+# is NOT listed here: that is the register's to say and this file's to read.
+# A list here would be the derived-value-by-memory class, in a control.
+#
+# NO DATE APPEARS IN THIS HOOK'S OUTPUT AND NONE SHOULD. The warn period used
+# to be printed as "2026-09-12 to 2026-09-17 UTC" -- a hand-maintained derived
+# value inside a control, with a guaranteed expiry, and it did expire while
+# still being printed. RULE-8. 27-DT2 section 4 ruled it out and ruled that it
+# does not come back.
+#
+# ROLLBACK (27-DT2 section 6). Setting work_item_enforced back to false, or
+# removing it, returns a surface to stage 3. That is available to David without
+# a further consultation and introduces no governance -- it restores the state
+# stage 3 already ratified, and it records itself as a corpus row change.
+# TIGHTENING is structural and takes the consultation route. Removing stage 3
+# as well -- a surface that neither warns nor refuses -- is a third thing and
+# is authorised by nothing here.
+#
+# WHY commit-msg AND NOT pre-commit. pre-commit runs BEFORE the message exists
+# and is handed nothing -- proven by attempting, 2026-09-12, both hooks
+# instrumented in a throwaway repo: pre-commit argc=0, commit-msg receives
+# .git/COMMIT_EDITMSG. 03-DT2 §3 originally placed ring 2 in pre-commit and was
+# corrected before execution. This hook reads the message AND shells
+# `git diff --cached` for the staged paths, so one hook has both halves.
+#
+# HOW THIS CONTROL CAN BE CROSSED (RULE-10)
+#
+# RE-DECLARED 2026-09-19, ruled by DT2 in 27-DT2 section 5. The four paths are
+# unchanged; WHAT CROSSING THEM COSTS is not, and a declaration written for a
+# hook that warned does not describe a hook that refuses.
+#
+#   1. `git commit --no-verify` skips it entirely. Git's documented behaviour,
+#      identical to the pre-commit gate in the governed repo.
+#      COST CHANGED: under stage 3 this skipped a warning -- a convenience.
+#      Under stage 4 it BYPASSES A REFUSAL. Same flag, different act.
+#   2. IT CANNOT SEE COMMITS THAT NEVER TOUCH A LOCAL GIT CLIENT. A GitHub
+#      Action or API commit runs no local hook at all. Measured: open-wire-bot
+#      authored 10 of open-wire-editions' 26 commits in 30 days as "Heartbeat".
+#      Ring 2 covers workstation commits and nothing else, by construction --
+#      which is why ring 3 exists and why it is not optional.
+#      COST CHANGED: under stage 3 such a commit wrote no warn-log line. Under
+#      stage 4 it is not reached at all, so an enforced surface receiving them
+#      is enforced against one population and open to another. That is ring
+#      3's, and 27-DT2 section 8 declines to carry it on OI-82.
+#   3. A fresh clone has no hooks until `git config core.hooksPath tools/hooks`
+#      is run. Per-clone, never committed. Same gap the governed repo's own
+#      pre-commit header names and does not solve.
+#      COST CHANGED, AND THIS IS THE ONE TO READ. Under stage 3 an unset
+#      hooksPath meant a silent hook. Under stage 4 it means ENFORCEMENT IS
+#      ABSENT AND NOTHING SAYS SO -- the clone reads as compliant rather than
+#      as unguarded. Measured 2026-09-19: set in 11 of 11 clones on one machine
+#      at one instant, which is a statement about a moment and not about the
+#      estate. Declared, not solved.
+#   4. .work-item-surfaces absent or unreadable -> this hook says nothing.
+#      Fail-open, deliberately: a surface nobody declared is not governed
+#      (01-DTOG section 2 P1), and a warn-mode hook that shouted about its own
+#      missing config would train people to ignore it before it ever refuses.
+#      COST CHANGED: fail-open now means REFUSES NOTHING, so a deleted or
+#      corrupt projection silently disables stage 4 on that surface. The guard
+#      is gen-surface-projection.js, which acquired a caller on 2026-09-19
+#      (tools/hooks/pre-commit GATE 4, and corpus-validation.yml) precisely
+#      because this became load-bearing.
+#   5. A THREE-FIELD PROJECTION LEAVES THE FOURTH FIELD EMPTY, which reads as
+#      not-enforced and warns. Deliberate and stated: it is the safe direction,
+#      and it is why the field needed no flag day. But a surface whose deployed
+#      projection was never updated is SIGNED AND NOT ENFORCED, and nothing on
+#      the surface itself detects that. Added 2026-09-19 with the field.
+#
+#   6. THE MARK, `Work-Item: de-minimis` -- a DECLARED, VISIBLE crossing, and
+#      the point of it. Added 2026-10-02, Ring 3 step 1 (below). A commit the
+#      owner judged too small for a Work Item carries the mark instead, and the
+#      coverage report lists every one, so the judgment is reviewable without
+#      anyone ruling on "small" in advance. It is refused on tooling (7).
+#   7. THE TOOLING-PATH LIST IS ONLY AS COMPLETE AS EACH ROW SAYS. The mark is
+#      refused on a commit touching a path the surface's projection names in its
+#      fifth field. A tooling file the row does not name is not recognised as
+#      tooling, and the mark passes on it. Paths are matched from the repository
+#      root: a folder ends in /, a file is named exactly.
+#
+# Authority for all seven: this file, as the governed source of record. Each is
+# reconsidered when the stage changes for any surface -- the event that
+# rewrote costs 1-4 on 2026-09-19.
+#
+# RING 3 STEP 1, 2026-10-02 -- THE MARK, THE TOOLING PATHS, AND THE 2048 RULE.
+# Ruled by DT2 in briefs/2026-10-01-svm-tranche-3/10-DT2 section 1, on the
+# consultation 07-DT2 as settled by 08-CC; ratified "I ratify 10-DT2 of
+# svm-tranche-3; previews: refused like production; SDLC short form pinned at
+# 0c9b887 (11-CC §3); build:local without the gate (11-CC §4) -- David Facer
+# 10/2/2026". Work Item OKF-TOGAF#141.
+#
+#   THE MARK is accepted on every surface, enforced or not -- SPEC-DISPATCH-SOP
+#   v1.4 Entry 3's de minimis, made visible. EXCEPT ON TOOLING: SPEC-DISPATCH-SOP
+#   v1.4 rules "tooling is never de minimis ... standing, no exceptions", and a
+#   commit with the mark that touches one of this surface's tooling paths is
+#   REFUSED where enforced and WARNED elsewhere. A projection WITHOUT the fifth
+#   field cannot say what tooling is, so the mark is refused on an enforced
+#   surface and warned on any other -- fail closed, the opposite direction from
+#   crossing 5, deliberately: that one guards a wrong refusal, this one a wrong
+#   acceptance.
+#
+#   THE 2048 RULE. The deploy gate reads the message through Vercel's
+#   commit-message variable, which Vercel truncates past 2048 bytes -- and this
+#   practice's messages are long, with the trailer at the end. On the deployed
+#   commits since 2026-09-01, half the Work-Item lines fell past the cut
+#   (09-CC). So a Work-Item line, or the mark, MUST LIE WHOLLY INSIDE THE FIRST
+#   2048 BYTES: refused where enforced, warned elsewhere. "Wholly" is CC's
+#   execution reading of 10-DT2's "begin within", declared in 12-CC: a line cut
+#   at byte 2048 can still match the pattern with the WRONG number (#141 cut to
+#   #14), so a message longer than 2048 bytes is read with its last, possibly
+#   partial, line dropped. The line may sit anywhere in the message -- near the
+#   top is the simplest way to pass.
+#
+#   THE CUT IS 1024 BYTES, NOT 2048 -- MEASURED, AND MOVED 2026-10-02. The
+#   paragraph above is kept as true of its moment. 2048 was Vercel's
+#   documented figure; on aimaturitymodels aad84af the gate read the variable
+#   at exactly 1024 bytes for a 1371-byte message, while 815- and 843-byte
+#   messages were read whole (12-CC section 5.2). Signed "Ring 3: the hook and
+#   the gate use 1024 bytes, as measured (12-CC §5.2) -- David Facer
+#   10/2/2026". The figure lives in CUT below and nowhere else in this file.
+#
+# ADMISSION, 2026-10-14 -- IS THE NAMED WORK ITEM FIT TO WORK UNDER? Work Item
+# OKF-TOGAF#197 part 4, the third door of 175-DT2. Ruled by DT2 in
+# briefs/2026-10-01-svm-tranche-3/179-DT2 and ratified "#197 part 4 as 179-DT2
+# rules it: the hook reads the record on this machine and says how old it is;
+# this repository under it, warning first; refusing after two clear weeks on my
+# line; a closed item refused unless the commit is a record about it; the desk
+# page's source and test into the repository -- David Facer 10/14/2026".
+#
+#   When a commit's Work-Item line passes, this hook hands the ids it names to
+#   tools/work-item-admission.js IN THE GOVERNED REPOSITORY'S CHECKOUT ON THIS
+#   MACHINE -- this repository itself when it is that one, otherwise the folder
+#   beside this repository named "OKF TOGAF" or "OKF-TOGAF" -- which reads the
+#   record there, offline, and prints a report only when an id was closed
+#   before today, has no typed header, or is no issue, with the record's age.
+#   No checkout, or no node: NOT CHECKED, said, and the commit passes.
+#
+#   REPORTED, NEVER REFUSED, ON EVERY SURFACE, ENFORCED OR NOT, until the
+#   owner's line turns the refusal on after two clear weeks (179-DT2 section
+#   3); that will be a change here, signed, never a field that flips by
+#   itself. A record ABOUT a closed item is not work under it: it carries the
+#   mark and names the item in its subject, so no Work-Item line names it and
+#   nothing is reported (179-DT2 section 4).
+#
+#   HOW THE ADMISSION REPORT CAN BE CROSSED (RULE-10):
+#     a. The record is as current as its last work-item-titles.js --write; an
+#        item opened, typed or closed since reads as it was. The write belongs
+#        in the same act (179-DT2 section 1), and the report prints the age.
+#     b. A governed checkout under any other folder name is not found: NOT
+#        CHECKED. So is a machine with no checkout -- the build server's case.
+#     c. Crossings 1 to 3 above apply unchanged: --no-verify, commits that
+#        never meet a local git client, a clone with no hooks path.
+
+MSG_FILE="$1"
+[ -n "$MSG_FILE" ] && [ -f "$MSG_FILE" ] || exit 0
+
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+SURFACES="$repo_root/.work-item-surfaces"
+[ -f "$SURFACES" ] || exit 0
+
+staged=$(git diff --cached --name-only 2>/dev/null)
+[ -n "$staged" ] || exit 0
+
+# Does this commit touch a declared in-scope surface, and is that surface
+# ENFORCED?
+# Projection format:
+#   <repository>\t<path or ->\t<work_item_required>\t<work_item_enforced>\t<work_item_tooling_paths>
+#
+# CR STRIPPING, ADDED 2026-09-12, AND IT IS THE DIFFERENCE BETWEEN THIS HOOK
+# WORKING AND DOING NOTHING. .work-item-surfaces is committed with LF, and a
+# clone with core.autocrlf=true -- which every clone in this estate has --
+# receives it as CRLF ON CHECKOUT. `read` then hands the LAST field a trailing
+# carriage return, so `required` is "true\r", the test below is FALSE for every
+# row, `touched` stays empty, and this hook exits 0 having printed nothing.
+# Not an error. Silence.
+#
+# Which meant ring 2 fired ONLY in the clone that generated its own projection
+# and had never re-checked it out. Found 2026-09-12 when a cherry-pick onto
+# main gave superdtf-0882.github.io a fresh CRLF copy and a real commit to a
+# declared surface passed unwarned -- inside OI-76's own warn window, which
+# was therefore measuring a control that could not fire. Brief:
+# briefs/2026-09-12-work-item-reliability/12-CC.
+#
+# All four fields are stripped, not just the last: a row with fewer fields
+# than expected parks the CR on whichever field ends up last -- which is
+# exactly what a three-field projection does to `required`, and is why every
+# field is stripped rather than the one that is nominally last.
+# ${var%$CR} is POSIX parameter expansion -- $'\r' is a bashism and this is
+# #!/bin/sh. And the loop still redirects from the file rather than piping
+# `tr -d '\r'` into it, because a pipe runs the loop in a subshell and
+# `touched` would not survive it -- which would replace this bug with a
+# quieter one.
+#
+# THE LOOP NO LONGER BREAKS ON THE FIRST MATCH, and that is a behaviour
+# change rather than a tidy-up. With a per-surface mode, a repository whose
+# projection holds several rows can have one enforced and another not, and
+# breaking early would take the mode of whichever row happened to sort first.
+# Every matching row is now read and THE STRICTER WINS -- the same rule the
+# generator applies when two rows collapse onto one surface.
+#
+# THE FIFTH FIELD, 2026-10-02: work_item_tooling_paths, comma-joined. For
+# every touched row it decides two things: whether a staged path is tooling
+# (tool_hit), and whether the row could say at all (no_tpaths). It is matched
+# in awk rather than a shell loop over IFS, because changing IFS inside this
+# loop would change how `read` splits the very next row.
+CR=$(printf '\r')
+touched=""
+enforce=""
+tool_hit=""
+no_tpaths=""
+while IFS="$(printf '\t')" read -r _repo spath required enforced tpaths; do
+  _repo=${_repo%"$CR"}
+  spath=${spath%"$CR"}
+  required=${required%"$CR"}
+  enforced=${enforced%"$CR"}
+  tpaths=${tpaths%"$CR"}
+  case "$_repo" in \#*|"") continue ;; esac
+  [ "$required" = "true" ] || continue
+  hit=""
+  if [ "$spath" = "-" ]; then
+    hit="yes"
+  elif printf '%s\n' "$staged" | grep -q "^$spath/"; then
+    hit="yes"
+  fi
+  [ -n "$hit" ] || continue
+  touched="yes"
+  if [ "$enforced" = "true" ]; then
+    enforce="yes"
+  fi
+  if [ -z "$tpaths" ]; then
+    no_tpaths="yes"
+  elif [ -z "$tool_hit" ]; then
+    tool_hit=$(printf '%s\n' "$staged" | awk -v tp="$tpaths" '
+      BEGIN { n = split(tp, a, ",") }
+      { for (i = 1; i <= n; i++) {
+          p = a[i]
+          if (p == "") continue
+          if (substr(p, length(p)) == "/") { if (index($0, p) == 1) { print "yes"; exit } }
+          else if ($0 == p) { print "yes"; exit }
+      } }')
+  fi
+done < "$SURFACES"
+
+[ -n "$touched" ] || exit 0
+
+# Trailer must be qualified: "OKF-TOGAF#119", never a bare "#119".
+# 08-DT2 §3: the repository qualifier is mandatory even while it is constant.
+WI_RE='^Work-Item:[[:space:]]*[A-Za-z0-9_.-]+#[0-9]+[[:space:]]*$'
+# The mark, exactly. 10-DT2 section 1 item 1.
+DM_RE='^Work-Item:[[:space:]]*de-minimis[[:space:]]*$'
+
+# THE FIRST $CUT BYTES, as the deploy gate will see them (header, THE 2048
+# RULE, and the 1024 line beneath it). Longer than that, the last line of the
+# cut is dropped: it may be partial, and a partial trailer can still match with
+# the wrong number.
+CUT=1024
+msg_bytes=$(wc -c < "$MSG_FILE" | tr -d ' ')
+if [ "$msg_bytes" -gt "$CUT" ]; then
+  firstcut=$(head -c "$CUT" "$MSG_FILE" | sed '$d')
+else
+  firstcut=$(cat "$MSG_FILE")
+fi
+has_wi=""; grep -Eq "$WI_RE" "$MSG_FILE" && has_wi="yes"
+has_dm=""; grep -Eq "$DM_RE" "$MSG_FILE" && has_dm="yes"
+wi_in=""; printf '%s\n' "$firstcut" | grep -Eq "$WI_RE" && wi_in="yes"
+dm_in=""; printf '%s\n' "$firstcut" | grep -Eq "$DM_RE" && dm_in="yes"
+
+# WHAT IS WRONG, IF ANYTHING. A qualified Work-Item line wins over the mark.
+#   none     -- neither a Work-Item line nor the mark (the original case)
+#   late     -- the line or the mark lies past the first $CUT bytes
+#   tooling  -- the mark, on a commit touching this surface's tooling
+#   unknown  -- the mark, and the projection cannot say what tooling is
+# THE ADMISSION REPORT (header, ADMISSION). Reports; never changes the exit.
+admission_report() {
+  ids=$(printf '%s\n' "$firstcut" | sed -n 's/^Work-Item:[[:space:]]*\([A-Za-z0-9_.-]*#[0-9]*\)[[:space:]]*$/\1/p')
+  [ -n "$ids" ] || return 0
+  gov=""
+  if [ -f "$repo_root/tools/work-item-admission.js" ] && [ -f "$repo_root/corpus/register_work_items.md" ]; then
+    gov="$repo_root"
+  else
+    common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+    if [ -n "$common" ]; then
+      estate=$(dirname "$(dirname "$common")")
+      for cand in "$estate/OKF TOGAF" "$estate/OKF-TOGAF"; do
+        if [ -f "$cand/tools/work-item-admission.js" ]; then gov="$cand"; break; fi
+      done
+    fi
+  fi
+  if [ -z "$gov" ] || ! command -v node >/dev/null 2>&1; then
+    echo "" >&2
+    echo "WORK ITEM ADMISSION -- NOT CHECKED: the governed record (an OKF-TOGAF checkout beside this" >&2
+    echo "  repository) was not found on this machine, or node is not installed. Nothing refused." >&2
+    echo "" >&2
+    return 0
+  fi
+  # $ids is left unquoted on purpose: one id per word, and an id holds no space.
+  node "$gov/tools/work-item-admission.js" --hook --date "$(date -u +%Y-%m-%d)" $ids >&2 2>/dev/null || true
+  return 0
+}
+
+reason=""
+if [ -n "$has_wi" ]; then
+  if [ -n "$wi_in" ]; then
+    admission_report
+    exit 0
+  fi
+  reason="late"
+elif [ -n "$has_dm" ]; then
+  if [ -n "$tool_hit" ]; then
+    reason="tooling"
+  elif [ -n "$no_tpaths" ]; then
+    reason="unknown"
+  elif [ -z "$dm_in" ]; then
+    reason="late"
+  else
+    exit 0
+  fi
+else
+  reason="none"
+fi
+
+# THE MODE IS STATED ON EVERY WARNING, ruled by DT2 in 27-DT2 section 4.
+# It is read from the projection for THIS surface, never written here, and
+# it carries no date: the old text named a warn period that had already
+# expired while the hook went on printing it.
+case "$reason" in
+  none)    wi_what="carries no Work-Item trailer" ;;
+  late)    wi_what="carries its Work-Item line past the first $CUT bytes of the message" ;;
+  tooling) wi_what="carries the de-minimis mark and touches this surface's tooling" ;;
+  unknown) wi_what="carries the de-minimis mark, and this surface's projection does not say what its tooling is" ;;
+esac
+if [ -n "$enforce" ]; then
+  wi_headline="WORK ITEM SOP -- REFUSED. This commit touches an ENFORCED public surface and $wi_what."
+  wi_mode_a="  MODE: STAGE 4 -- REFUSING on this surface. This commit was NOT created."
+  wi_mode_b="  Enforcement is declared per surface in corpus/catalog_applications.md"
+  wi_mode_c="  (work_item_enforced) and reaches this hook through the projection below."
+else
+  wi_headline="WORK ITEM SOP -- this commit touches a declared public surface and $wi_what."
+  wi_mode_a="  MODE: STAGE 3 -- WARNING on this surface. Nothing is refused."
+  wi_mode_b="  Enforcement is declared per surface in corpus/catalog_applications.md"
+  wi_mode_c="  (work_item_enforced) and is not set for this one."
+fi
+
+echo "" >&2
+echo "$wi_headline" >&2
+echo "" >&2
+echo "$wi_mode_a" >&2
+echo "$wi_mode_b" >&2
+echo "$wi_mode_c" >&2
+echo "" >&2
+case "$reason" in
+  late)
+    echo "  Vercel passes the deploy gate only the first $CUT bytes of a commit message;" >&2
+    echo "  move the Work-Item line near the top. This message is $msg_bytes bytes." >&2
+    ;;
+  tooling)
+    echo "  Tooling is never de minimis (SPEC-DISPATCH-SOP v1.4) -- this commit needs a Work Item." >&2
+    echo "  Tooling paths for this surface are the fifth field of the projection below." >&2
+    ;;
+  unknown)
+    echo "  The projection below has no fifth field, so tooling cannot be told apart." >&2
+    echo "  Regenerate it (node tools/gen-surface-projection.js --write in OKF-TOGAF)," >&2
+    echo "  or use a Work Item." >&2
+    ;;
+esac
+echo "  Add a trailer to the commit message, qualified, near the top:" >&2
+echo "" >&2
+echo "      Work-Item: OKF-TOGAF#NNN" >&2
+echo "" >&2
+echo "  Too small for one, and not tooling? The owner's de minimis mark:" >&2
+echo "" >&2
+echo "      Work-Item: de-minimis" >&2
+echo "" >&2
+echo "  No Work Item yet? Create one from the governed repo:" >&2
+echo "      node tools/type-issue.js create --repo superdtf-0882/OKF-TOGAF \\" >&2
+echo "        --title \"...\" --body-file <path> --type work_item \\" >&2
+echo "        --realizes INT-002 --strata S6" >&2
+echo "" >&2
+echo "  Declared surfaces for this repo: $SURFACES" >&2
+echo "  Governing record: corpus/catalog_applications.md (OKF-TOGAF)" >&2
+echo "" >&2
+
+# ---------------------------------------------------------------------
+# THE WARN LOG. Ruled by DT2 2026-09-12 (briefs/2026-09-12-work-item-
+# reliability/13-DT2 §2) and PROMOTED FROM RIDER TO GATE: OI-76's second
+# warn window does not open until this line exists. The first window was
+# closed as ABORTED because its instrument could not fire, and DTOG's
+# standing question -- are warnings retained anywhere? -- had assumed a
+# numerator the window never had. A second window without a log would be
+# the same instrument-less count with a fresh date.
+#
+# WHAT THIS MEASURES (RULE-4 scope). One line per occasion on which this
+# hook PRINTED the warning above. That is all it is. It does NOT measure:
+# commits made without a trailer (a --no-verify commit never reaches
+# here), whether any human read the warning, or whether the missing
+# trailer was later added by amend. The denominator for "how often does a
+# public-surface commit lack a trailer" is NOT in this file and cannot be
+# derived from it.
+#
+# A FOURTH FIELD WAS ADDED 2026-09-19: WARNED or REFUSED. Until stage 4 a
+# line meant one thing, so the mode did not need recording; now the same
+# log holds both outcomes and a count that did not distinguish them would
+# be the coverage-rate mistake again. It is APPENDED rather than inserted,
+# and nothing parses this file positionally -- grepped across tools/ and
+# .github/ on 2026-09-19 and found no reader at all; it has been read by
+# hand every time. A REFUSED line records a commit that DOES NOT EXIST,
+# which is the one way this log now differs in kind from what it was.
+#
+# HOW THIS CONTROL CAN BE CROSSED (RULE-10)
+#   1. IT LIVES IN .git/ AND DOES NOT TRAVEL. Never committed, never
+#      pushed, per-clone exactly as core.hooksPath is. A warning in one
+#      clone is invisible in every other, and a fresh clone starts empty.
+#      Counting a window means collecting from each clone by hand.
+#   2. `git commit --no-verify` skips the hook, so it skips the log. The
+#      commit that most wants counting is the one that can opt out.
+#   3. A commit that never touches a local git client -- a GitHub Action,
+#      the API, the web editor -- runs no hook and writes no line.
+#   4. The file is append-only by convention, not by permission. Anyone
+#      with the clone can edit or delete it, and nothing detects that.
+#   5. If .git/ is unwritable the append fails and IS DELIBERATELY
+#      SWALLOWED. A logging failure must never break a commit, and a
+#      warn-mode hook that shouted about its own logging would train
+#      people to ignore it before stage 4 ever refuses.
+LOG="$repo_root/.git/work-item-warnings.log"
+# Each field is built and bounded to ONE LINE before printf, because the
+# obvious form -- $(git rev-parse --abbrev-ref HEAD || echo '?') -- emits
+# BOTH the command's output and the fallback when the command prints
+# something AND fails, which is exactly what rev-parse does in a
+# repository with no commits yet: "HEAD" on stdout, non-zero exit. That
+# wrote two log lines per warning and was caught by the harness counting
+# lines rather than by reading the code.
+log_when=$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null)
+log_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | head -n 1)
+[ -n "$log_branch" ] || log_branch="?"
+log_files=$(printf '%s' "$staged" | tr '\n' ',')
+if [ -n "$enforce" ]; then log_mode="REFUSED"; else log_mode="WARNED"; fi
+# A FIFTH FIELD, 2026-10-02: the reason -- none, late, tooling or unknown.
+# Appended, as the fourth was; nothing parses this file positionally.
+printf '%s\t%s\t%s\t%s\t%s\n' "$log_when" "$log_branch" "$log_files" "$log_mode" "$reason" >> "$LOG" 2>/dev/null || true
+
+# STAGE 3 WARNS; STAGE 4 REFUSES. WHICH ONE IS NOT DECIDED HERE -- it came
+# from work_item_enforced in the projection, for the surface this commit
+# touches. See the header before changing either line. The `exit 0` is still
+# load-bearing governance for every surface that is not enforced, and it is
+# still the majority of them.
+if [ -n "$enforce" ]; then
+  exit 1
+fi
+exit 0

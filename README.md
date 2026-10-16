@@ -1,0 +1,37 @@
+# AI-Native Product Marketing Maturity Model
+
+A maturity model appraising an organization's product marketing capability in an AI-native operating model: how its messaging, proof, enablement, launch and adoption communication are kept current, substantiated and governed, on market intelligence the organization shares. Part of the same family as the [AI-Native SDLC](https://github.com/superdtf-0882/ai-native-sdlc-maturity-model), [PDLC](https://github.com/superdtf-0882/ai-native-pdlc-maturity-model), [Enterprise Architecture](https://github.com/superdtf-0882/ai-native-ea-maturity-model) and [Portfolio Prioritization](https://github.com/superdtf-0882/ai-native-product-prioritization-maturity-model) maturity models, and uses the family's five levels: Nascent, Modeled, Continuous, Integral, Telemetric.
+
+**Versions.** The repository's release tag versions the repository; the model's own version line names the release that last changed its text. A release that changes only other files leaves the version line as it was.
+
+## What this is
+
+Eleven dimensions, each scored on the family's five-level ladder, with a transition and a verification for every step from A to D and a sustainment at E. See `ai_native_product_marketing_maturity_model.md` for the full matrix — the source of truth. `short_form.yml` is a one-sentence-per-cell compression of the dimensions this model writes itself, not a replacement.
+
+## Inherited by reference
+
+- **D1–D3** (market discovery, buyer and user personas, positioning and competitive intelligence) are the shared intelligence layer, [`shared_intelligence_layer.md`](https://github.com/superdtf-0882/ai-native-sdlc-maturity-model/blob/v1.4.1/shared_intelligence_layer.md) in the SDLC repository, at its `v1.4.1` tag — the same text the SDLC and PDLC models inherit.
+- **D10** (shared language) is the Enterprise Architecture model's [D10](https://github.com/superdtf-0882/ai-native-ea-maturity-model/blob/v1.1.2/ai_native_ea_maturity_model.md), at its `v1.1.2` tag.
+
+The matrix renders their text from those sources at those tags. It is edited only there. Their short-form cells are the sources' own.
+
+## Open items at v1.0.0
+
+Two questions ship as **visible flags** in the matrix's review boundaries. A flag is not a maturity judgment: the content is accurate as drafted, and the question is open.
+
+- **D9** is informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention.
+- **The upper levels of D5–D8** await validation against larger organizations than the one their first drafts came from.
+
+## Not in this repository
+
+The **scoring instrument** — disqualifiers and appraisal procedure — is a separate artifact, as it is for the sibling models, and is not yet written.
+
+## Acknowledgments
+
+Developed in collaboration with Duane Call and Tracy Thayne.
+
+The first drafts of D5–D8 came from practitioner experience at a small, AI-forward K-12 company, contributed in October 2026 and revised through review. Two outside reviews in the same month shaped the released text: one on the family's Modeled test, the status labels and the D4/D11 boundary; one on the customer's place in the model, go-to-market as the grouping of consumers, and leadership and culture as conditions a maturity model does not score. Their open questions are carried as flags in the model's review boundaries.
+
+## Licence
+
+CC BY 4.0. See `LICENSE.md`.
