@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.1 — 2026-10-16
+
+D10 now carries the Enterprise Architecture model's emphasis, as D10 has it at that model's v1.1.2. A text inherited by reference is the source's text, marks included; v1.0.0 had rendered D10's words without its bold, italics and capitals. In one place that changed how a sentence reads: at Level C the author's answer, *loose sense, deliberately*, is set apart again. No level, transition, verification or sustainment changed in meaning, and no other dimension changed.
+
 ## v1.0.0 — 2026-10-16
 
 First release. Eleven dimensions, A–E, with a transition and verification on every A–D level and sustainment on every E level.

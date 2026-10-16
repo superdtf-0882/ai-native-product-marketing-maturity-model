@@ -1,6 +1,6 @@
 # AI-Native Product Marketing Maturity Model
 
-**Version 1.0.0 — 2026-10-16.** Eleven dimensions, five levels (A–E). D1–D3 inherited by reference from STD-SHARED-INTELLIGENCE v1.2 (SDLC release v1.4.1); D10 inherited by reference from STD-EA-MM D10 at v1.1.2 (model text v1.1.1). The inherited text is rendered here from the sources at their tags. See `CHANGELOG.md`.
+**Version 1.0.1 — 2026-10-16.** Eleven dimensions, five levels (A–E). D1–D3 inherited by reference from STD-SHARED-INTELLIGENCE v1.2 (SDLC release v1.4.1); D10 inherited by reference from STD-EA-MM D10 at v1.1.2 (model text v1.1.1). The inherited text is rendered here from the sources at their tags. See `CHANGELOG.md`.
 
 ## Family maturity names
 
@@ -560,43 +560,43 @@ Terms are used without shared referents and nothing surfaces the divergence. The
 
 **Transition from A to B**
 
-Enumerate the terms that actually collide, each with its distinct senses and the function that owns each sense. The test of inclusion is collision in practice, not importance in the abstract — a term nobody disputes does not need a row. Each sense states what it covers and what it excludes, because a definition without an exclusion cannot settle an argument.
+Enumerate the terms that actually collide, each with its distinct senses and the function that owns each sense. **The test of inclusion is collision in practice, not importance in the abstract** — a term nobody disputes does not need a row. Each sense states what it covers and what it excludes, because a definition without an exclusion cannot settle an argument.
 
-**Verification:** A reader can establish, without asking the author, that the enterprise distinguishes customer, buyer and user, and what each one excludes.
+**Verification:** A reader can establish, without asking the author, that the enterprise distinguishes *customer*, *buyer* and *user*, and what each one excludes.
 
 ### B — Modeled
 
-A governed vocabulary exists. Terms have senses, senses have owners, and the document is findable. Nothing consults it. The definitions are correct and inert — read when someone is already suspicious, which is the case where they were least needed. Outward translation remains a per-author judgment. An organization at B typically believes it is higher, because the artifact exists and is not wrong.
+A governed vocabulary exists. Terms have senses, senses have owners, and the document is findable. **Nothing consults it.** The definitions are correct and inert — read when someone is already suspicious, which is the case where they were least needed. Outward translation remains a per-author judgment. **An organization at B typically believes it is higher, because the artifact exists and is not wrong.**
 
 **Transition from B to C**
 
-Bind the vocabulary to the surfaces where writing happens — the editor, the ticket, the document, the agent's context — so the definition arrives at the moment of authorship instead of waiting to be looked up. An agent meeting an ambiguous term challenges it in one interaction, cites the vocabulary as the source of the challenge, and makes the answer cheap to give.
+Bind the vocabulary to the surfaces where writing happens — the editor, the ticket, the document, the agent's context — so the definition **arrives at the moment of authorship** instead of waiting to be looked up. An agent meeting an ambiguous term challenges it in one interaction, **cites the vocabulary as the source of the challenge**, and makes the answer cheap to give.
 
 **Verification:** An author writing an ambiguous term is challenged as they write it; the challenge names the vocabulary it came from; and answering costs one click rather than a sentence.
 
 ### C — Continuous
 
-The vocabulary is active at the point of authorship. Ambiguity is surfaced rather than discovered downstream, and the challenge cites its source so the author can judge whether to trust it. The author can answer loose sense, deliberately and proceed. Outward-facing language is still handled term by term: nothing distinguishes a term that must be translated for an external reader from one that may cross unchanged.
+The vocabulary is active at the point of authorship. Ambiguity is surfaced rather than discovered downstream, and the challenge cites its source so the author can judge whether to trust it. **The author can answer *loose sense, deliberately* and proceed.** Outward-facing language is still handled term by term: nothing distinguishes a term that must be translated for an external reader from one that may cross unchanged.
 
 **Transition from C to D**
 
-Two moves, one capability. Inward: give the agent enough governed context — function, audience, document type — that a term whose sense the context settles is resolved rather than queried, with the agent stating which sense it used. Asking is correct for genuine ambiguity and is a tax everywhere else. Outward: at the boundary the operation inverts. An internal term leaving for an external reader is not disambiguated, it is translated, and the translation records what it collapsed.
+**Two moves, one capability.** *Inward:* give the agent enough governed context — function, audience, document type — that a term whose sense the context settles is **resolved rather than queried**, with the agent stating which sense it used. **Asking is correct for genuine ambiguity and is a tax everywhere else.** *Outward:* at the boundary the operation inverts. An internal term leaving for an external reader is not disambiguated, it is **translated**, and the translation **records what it collapsed**.
 
-**Verification:** For an internal document in a known function, the agent resolves without asking and names the sense it used. For an outbound document, the same term raises the reverse challenge — this word carries three senses inside and one outside; is the collapse intended? — and the answer is recorded with the document.
+**Verification:** For an internal document in a known function, the agent resolves without asking and names the sense it used. For an outbound document, the same term raises the reverse challenge — *this word carries three senses inside and one outside; is the collapse intended?* — and the answer is recorded with the document.
 
 ### D — Integral
 
-One vocabulary, two governed operations. Inside, terms resolve from context and the agent states its reading, so precision is affordable and traversal is deep — a term reaches its sense, its siblings and its owner. At the boundary, translation is a controlled act whose collapses are recorded with the document that made them, so a later reader of the contract and a later reader of the press release can each establish what was meant. The distinction survives the crossing in both directions.
+One vocabulary, two governed operations. Inside, terms resolve from context and the agent states its reading, so precision is affordable and traversal is deep — a term reaches its sense, its siblings and its owner. At the boundary, translation is a controlled act whose collapses are recorded with the document that made them, so a later reader of the contract and a later reader of the press release can each establish what was meant. **The distinction survives the crossing in both directions.**
 
 **Transition from D to E**
 
-Instrument both operations: where terms are queried, where they resolve, where authors mark a sense deliberately loose, and where an outbound translation is overridden. Read the results as evidence about the model rather than about the authors. A distinction repeatedly waved away is one the enterprise does not hold.
+Instrument both operations: where terms are queried, where they resolve, where authors mark a sense deliberately loose, and where an outbound translation is overridden. **Read the results as evidence about the MODEL rather than about the authors.** A distinction repeatedly waved away is one the enterprise does not hold.
 
 **Verification:** A term is retired, merged or re-scoped on the evidence of its own usage record, and the change is traceable to the measurements that prompted it.
 
 ### E — Telemetric
 
-The vocabulary is a measured instrument. The enterprise can see which distinctions its people operate and which they route around, and corrects the model on that evidence rather than on advocacy. Terms are retired and merged as readily as they are added. The outward translation layer is tuned by what external readers actually misread, not by what internal authors assume they will.
+The vocabulary is a measured instrument. The enterprise can see which distinctions its people operate and which they route around, and corrects the model on that evidence rather than on advocacy. **Terms are retired and merged as readily as they are added.** The outward translation layer is tuned by what external readers actually misread, not by what internal authors assume they will.
 
 From Product Marketing's vantage, the external readers are buyers, the field, and partners; what they are given to read is D5's approved wording, and what they misread arrives through D9.
 
