@@ -1,8 +1,8 @@
 # AI-Native Product Marketing Maturity Model
 
-A maturity model appraising an organization's product marketing capability in an AI-native operating model: how its messaging, proof, enablement, launch and adoption communication are kept current, substantiated and governed, on market intelligence the organization shares. Part of the same family as the [AI-Native SDLC](https://github.com/superdtf-0882/ai-native-sdlc-maturity-model), [PDLC](https://github.com/superdtf-0882/ai-native-pdlc-maturity-model), [Enterprise Architecture](https://github.com/superdtf-0882/ai-native-ea-maturity-model) and [Portfolio Prioritization](https://github.com/superdtf-0882/ai-native-product-prioritization-maturity-model) maturity models, and uses the family's five levels: Nascent, Modeled, Continuous, Integral, Telemetric.
+A maturity model appraising an organization's product marketing capability in an AI-native operating model: how its messaging, proof, enablement, launch and adoption communication are kept current, substantiated and governed, on market intelligence the organization shares. It is one of the AI-native maturity models, and uses the family's five levels: Nascent, Modeled, Continuous, Integral, Telemetric. For the family, see aimaturitymodels.com/models.
 
-**Versions.** The repository's release tag versions the repository; the model's own version line names the release that last changed its text. A release that changes only other files leaves the version line as it was.
+**Versions.** The release tag versions the repository, and the model's version line names the tag it is at, every release (STD-MODEL-PARTS v1.1 §4C). `CHANGELOG.md` says what each release changed.
 
 ## What this is
 
@@ -10,7 +10,7 @@ Eleven dimensions, each scored on the family's five-level ladder, with a transit
 
 ## Inherited by reference
 
-- **D1–D3** (market discovery, buyer and user personas, positioning and competitive intelligence) are the shared intelligence layer, [`shared_intelligence_layer.md`](https://github.com/superdtf-0882/ai-native-sdlc-maturity-model/blob/v1.4.1/shared_intelligence_layer.md) in the SDLC repository, at its `v1.4.1` tag — the same text the SDLC and PDLC models inherit.
+- **D1–D3** (market discovery, buyer and user personas, positioning and competitive intelligence) are the shared intelligence layer, [`shared_intelligence_layer.md`](https://github.com/superdtf-0882/ai-native-sdlc-maturity-model/blob/v1.4.1/shared_intelligence_layer.md) in the SDLC repository, at its `v1.4.1` tag.
 - **D10** (shared language) is the Enterprise Architecture model's [D10](https://github.com/superdtf-0882/ai-native-ea-maturity-model/blob/v1.1.2/ai_native_ea_maturity_model.md), at its `v1.1.2` tag.
 
 The matrix renders their text from those sources at those tags. It is edited only there. Their short-form cells are the sources' own.
@@ -24,7 +24,7 @@ Two questions ship as **visible flags** in the matrix's review boundaries. A fla
 
 ## Not in this repository
 
-The **scoring instrument** — disqualifiers and appraisal procedure — is a separate artifact, as it is for the sibling models, and is not yet written.
+The **scoring instrument** — disqualifiers and appraisal procedure — is a separate artifact, kept with the practice rather than in this repository.
 
 ## Acknowledgments
 

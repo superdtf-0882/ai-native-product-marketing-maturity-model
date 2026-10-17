@@ -1,16 +1,18 @@
 # AI-Native Product Marketing Maturity Model
 
-**Version 1.0.1 — 2026-10-16.** Eleven dimensions, five levels (A–E). D1–D3 inherited by reference from STD-SHARED-INTELLIGENCE v1.2 (SDLC release v1.4.1); D10 inherited by reference from STD-EA-MM D10 at v1.1.2 (model text v1.1.1). The inherited text is rendered here from the sources at their tags. See `CHANGELOG.md`.
+**Version 1.0.2 — 2026-10-17.** Eleven dimensions, five levels (A–E). D1–D3 inherited by reference from STD-SHARED-INTELLIGENCE v1.2 (SDLC release v1.4.1); D10 inherited by reference from STD-EA-MM D10 at v1.1.2 (model text v1.1.1). The inherited text is rendered here from the sources at their tags. See `CHANGELOG.md`.
 
 ## Family maturity names
 
 A — Nascent · B — Modeled · C — Continuous · D — Integral · E — Telemetric
 
+Names, descriptions and the general shape: family_maturity_levels.md in github.com/superdtf-0882/ai-native-sdlc-maturity-model at v1.4.2.
+
 ## Family consistency and review boundaries
 
 - D1–D3 and D10 are inherited by reference: D1–D3 from STD-SHARED-INTELLIGENCE v1.2, D10 from STD-EA-MM's Shared language. Their text is rendered here from the sources at their tags and is edited only there. D10 carries one vantage paragraph at E, which is this model's; D1–D3's are the standard's.
 
-- Product Marketing-specific readings on top of the shared D1–D3 text, in the form the PDLC uses: D1, no delta beyond the shared text. D2, from this chair the function's asset is usually the buyer persona. D3, the monitoring feed is often this function's; the positioning thesis is not.
+- Product Marketing-specific readings on top of the shared D1–D3 text: D1, no delta beyond the shared text. D2, from this chair the function's asset is usually the buyer persona. D3, the monitoring feed is often this function's; the positioning thesis is not.
 
 - D10 is inherited rather than redrafted for the same reason D1–D3 are: the vocabulary is one enterprise asset, and a Product Marketing-owned vocabulary would be the separate departmental truth this model refuses. D10 owns the operation (the challenge at authorship, the resolution from context, the recorded collapse at the boundary). D5 owns what persists across assets (the claim, its approved wording, its provenance, the collapse record each asset carries). D4 owns standing (what a record is, where it came from, whether it is in force). D11 owns whether an actor may change, issue, or publish any of them.
 
@@ -28,7 +30,7 @@ A — Nascent · B — Modeled · C — Continuous · D — Integral · E — Te
 
 - D9 is scored on how response evidence is gathered, linked, routed, and acted on, not on how fast the market answers. In calendar-bound markets such as K-12 districts, signal arrives on budget and school-year cycles; market-imposed signal latency is not itself a maturity deficit, and D9-E's "where signals permit" is read in that light.
 
-- D11 covers decision rights and enforcement, not the entire security programme or enterprise resource allocation. Every functional model in the family carries its own dimension for what an actor may do: SDLC D11 Security & compliance (authorized extent and declared minimum per agent), PDLC D6 Executive engagement & authority. This one is Product Marketing's.
+- D11 covers decision rights and enforcement, not the entire security programme or enterprise resource allocation. Compare STD-SDLC-MM D11 and STD-PDLC-MM D6.
 
 - Dimension order is presentation order, not a process. Dimensions are scored independently; ordinal levels are not averaged.
 
@@ -46,11 +48,9 @@ A — Nascent · B — Modeled · C — Continuous · D — Integral · E — Te
 
 - D6 measures whether the field can use current knowledge at the moment of a commercial conversation, not the quality of the content itself, which is D5. Sales owns commercial commitment; enablement never sets price or terms. That boundary holds at every level, so it is stated here and not in a level cell.
 
-- D7 measures readiness and market introduction against release intent. Release-goal authority stays with Product Management at every level; the readiness record informs the release decision and never makes it. D7 at E aligns with PDLC D9 at E and SDLC D10 at E (progressive delivery).
+- D7 measures readiness and market introduction against release intent. Release-goal authority stays with Product Management at every level; the readiness record informs the release decision and never makes it. D7 at E aligns with STD-PDLC-MM D9 at E and STD-SDLC-MM D10 at E (progressive delivery).
 
-- D8 governs outbound guidance that supports adoption; D9 governs what market and customer response teaches. Customer Success owns realized customer outcomes at every level. D8 at E depends on D11 at D, since agents send within delegated authority; the cell cites it in the family's form, as SDLC D10-D cites D11-D.
-
-- The family has no fixed dimension count: EA has ten, PDLC twelve, SDLC thirteen, Portfolio Prioritization three. Eleven here carries no cost on that account.
+- D8 governs outbound guidance that supports adoption; D9 governs what market and customer response teaches. Customer Success owns realized customer outcomes at every level. D8 at E depends on D11 at D, since agents send within delegated authority; the cell cites it in the family's form; see STD-SDLC-MM D10 at D.
 
 - Flag: the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from.
 

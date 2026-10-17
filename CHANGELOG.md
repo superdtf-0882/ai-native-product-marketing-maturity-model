@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.2 — 2026-10-17
+
+A wording release under the model family's parts standard (STD-MODEL-PARTS v1.1). No level, transition, verification or sustainment changed, and no score against v1.0.1 is affected.
+
+- The level-names section points to the family's one home for the names, `family_maturity_levels.md` in the SDLC repository at v1.4.2.
+- The review boundaries no longer describe the other models of the family: the count of their dimensions goes, and where a boundary is read beside another model's dimension it cites that dimension by its standard's ID (STD-SDLC-MM, STD-PDLC-MM).
+- Pre-AI and Exempt are named by their source, the EA model's text at v1.1.2, in place of a sentence saying they keep their family meanings.
+- The basis lines of D1–D3 and D10 name their sources' addresses, so each rendered copy can be checked against its source at its tag.
+- The two open questions are worded to follow their dimensions' names, in the matrix and the short form: D9's, and D5–D8's.
+- The README links the family's models page in place of naming the other models, states the version rule, and says the scoring instrument is kept with the practice.
+- `tools/release-check.js` and `tools/model-parser.js` are the practice's template's current copies; `short_form.yml` cites this release's text commit.
+
 ## v1.0.1 — 2026-10-16
 
 D10 now carries the Enterprise Architecture model's emphasis, as D10 has it at that model's v1.1.2. A text inherited by reference is the source's text, marks included; v1.0.0 had rendered D10's words without its bold, italics and capitals. In one place that changed how a sentence reads: at Level C the author's answer, *loose sense, deliberately*, is set apart again. No level, transition, verification or sustainment changed in meaning, and no other dimension changed.
