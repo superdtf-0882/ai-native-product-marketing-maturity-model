@@ -14,9 +14,10 @@
 # not drop it.
 
 # RE-VERIFIED 2026-10-17 against f9018d6 (the text commit of v1.0.2): the seven native dimensions' cells unchanged from v1.0.1; the D5-D8 and D9 flags worded with the matrix's, as the matrix's review boundaries carry them.
+# RE-VERIFIED 2026-10-17 against 786e9e4 (the text commit of v1.0.3): layout only; the 35 cells and the five flag lines unchanged from v1.0.2.
 version: "1.0.0"
-source_matrix_version: "1.0.2"
-source_matrix_commit: "f9018d628461b1742f8dc1629ffc43c45f038f0e"
+source_matrix_version: "1.0.3"
+source_matrix_commit: "786e9e4bba7c653d7b99419351902e1dbae89679"
 
 dimensions:
   D4:
