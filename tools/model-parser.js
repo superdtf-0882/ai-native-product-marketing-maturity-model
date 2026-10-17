@@ -47,16 +47,20 @@ const NAMES_LINE = /^A — \S+ · B — \S+ · C — \S+ · D — \S+ · E — \
 const THRESHOLD_SOURCE = /^\*\*Pre-AI and Exempt:\*\* (STD-[A-Z0-9-]+)'s text at (v\d+\.\d+\.\d+), github\.com\/superdtf-0882\/(ai-native-[a-z0-9-]+-maturity-model)\.?$/;
 const THRESHOLD_NONE = /^\*\*Pre-AI and Exempt:\*\* none; this model scores A to E only\.$/;
 
-// Paragraphs: runs of lines between blank lines, a heading or a rule always its own.
-// Each paragraph's lines are joined by one space (§2 rule i).
+// Paragraphs: runs of lines between blank lines, a heading or a rule always its own. Each
+// paragraph's lines are joined by one space, a wrapped line's indent dropped (§2 rule i). A
+// list item starts its own paragraph, so two items merged onto one line read as a difference
+// rather than as the same words (420-CC, on 219-DT2).
+const LIST_ITEM = /^\s*(?:[-*+]|\d+[.)])\s/;
 function paragraphs(lines) {
   const out = [];
   let cur = [];
-  const flush = () => { if (cur.length) out.push(cur.map((l) => l.replace(/\s+$/, "")).join(" ")); cur = []; };
+  const flush = () => { if (cur.length) out.push(cur.map((l, i) => (i ? l.trim() : l.replace(/\s+$/, ""))).join(" ")); cur = []; };
   for (const line of lines) {
     if (!line.trim()) { flush(); continue; }
     if (HEADING.test(line) || /^-{3,}$/.test(line.trim())) { flush(); out.push(line.trim()); continue; }
     if (/^\|/.test(line)) { flush(); out.push(line); continue; }
+    if (LIST_ITEM.test(line)) flush();
     cur.push(line);
   }
   flush();
@@ -172,7 +176,7 @@ function parseModel(input) {
   const hs = headings(lines);
   const out = {
     title: null, id: null, version: null, date: null, dialect: null,
-    namesLine: null, namesSection: null, readingRules: null, thresholdStates: { preAI: null, exempt: null },
+    namesLine: null, namesSection: null, readingRules: null, boundaries: null, provenance: null, thresholdStates: { preAI: null, exempt: null },
     flags: [], dimensions: [], problems: [],
   };
   const h1 = hs.find((h) => h.level === 1);
@@ -208,6 +212,14 @@ function parseModel(input) {
       const kept = body.filter((_, k) => !skip.has(start + k));
       out.readingRules = { heading: h.text, line: h.i + 1, text: paragraphs(kept).filter((p) => !/^-{3,}$/.test(p) && !/^- Flag: /.test(p)).join("\n\n") };
     }
+  }
+  // The cross-dimension boundaries (M7) and the provenance (M8), as text, for the text-neutral
+  // test: the section under its heading, its sub-headings and paragraphs, the heading's own words
+  // left out, since retitling a section is layout (420-CC).
+  for (const h of hs) {
+    const asText = () => paragraphs(section(lines, hs, h)).filter((p) => !/^-{3,}$/.test(p)).join("\n\n");
+    if (!out.boundaries && h.level === 2 && /^Cross-dimension boundar/i.test(h.text)) out.boundaries = { heading: h.text, text: asText() };
+    if (!out.provenance && h.level === 2 && /^(Dimension provenance|Family position|Provenance)\b/i.test(h.text)) out.provenance = { heading: h.text, text: asText() };
   }
   for (const p of paragraphs(lines)) {
     let m;

@@ -26,7 +26,7 @@ Names, descriptions and the general shape: family_maturity_levels.md in github.c
 
 - Modeled (B) in this family means four things at once: a deliberate method exists, it is manual, it is owned by one function, and the AI-assisted part of it follows a consistent method. The B cells of D4–D9 and D11 carry all four so that an AI-native B can be told from a pre-AI one. D10's B is the source model's.
 
-- Flag: D9 is informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention.
+- Flag: D9: Informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention.
 
 - D9 is scored on how response evidence is gathered, linked, routed, and acted on, not on how fast the market answers. In calendar-bound markets such as K-12 districts, signal arrives on budget and school-year cycles; market-imposed signal latency is not itself a maturity deficit, and D9-E's "where signals permit" is read in that light.
 
@@ -34,7 +34,7 @@ Names, descriptions and the general shape: family_maturity_levels.md in github.c
 
 - Dimension order is presentation order, not a process. Dimensions are scored independently; ordinal levels are not averaged.
 
-- Pre-AI and Exempt retain their family meanings and are outside A–E.
+**Pre-AI and Exempt:** STD-EA-MM's text at v1.1.2, github.com/superdtf-0882/ai-native-ea-maturity-model.
 
 - Status labels: Inherited · by reference means the text is the source's at the cited tag and is edited only there; Native means this model's own. Provenance is in each dimension's basis line, not in its status.
 
@@ -52,7 +52,7 @@ Names, descriptions and the general shape: family_maturity_levels.md in github.c
 
 - D8 governs outbound guidance that supports adoption; D9 governs what market and customer response teaches. Customer Success owns realized customer outcomes at every level. D8 at E depends on D11 at D, since agents send within delegated authority; the cell cites it in the family's form; see STD-SDLC-MM D10 at D.
 
-- Flag: the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from.
+- Flag: D5–D8: The upper levels await validation against larger organizations than the one their first drafts came from.
 
 ## D1. Market discovery & definition
 
@@ -60,7 +60,7 @@ Names, descriptions and the general shape: family_maturity_levels.md in github.c
 
 **Status:** Inherited · by reference
 
-**Basis:** STD-SHARED-INTELLIGENCE v1.2 · 2026-10-16 (SDLC release v1.4.1), by reference. Levels, transitions, verifications, and sustainment are rendered here from the standard at its tag and are edited only there
+**Basis:** STD-SHARED-INTELLIGENCE v1.2 · 2026-10-16 (SDLC release v1.4.1), github.com/superdtf-0882/ai-native-sdlc-maturity-model/shared_intelligence_layer.md, by reference. Levels, transitions, verifications, and sustainment are rendered here from the standard at its tag and are edited only there
 
 ### A — Nascent
 
@@ -116,7 +116,7 @@ From D1's vantage, market signals, trend data, and opportunity models are the in
 
 **Status:** Inherited · by reference
 
-**Basis:** STD-SHARED-INTELLIGENCE v1.2 · 2026-10-16 (SDLC release v1.4.1), by reference. Levels, transitions, verifications, and sustainment are rendered here from the standard at its tag and are edited only there
+**Basis:** STD-SHARED-INTELLIGENCE v1.2 · 2026-10-16 (SDLC release v1.4.1), github.com/superdtf-0882/ai-native-sdlc-maturity-model/shared_intelligence_layer.md, by reference. Levels, transitions, verifications, and sustainment are rendered here from the standard at its tag and are edited only there
 
 ### A — Nascent
 
@@ -172,7 +172,7 @@ From D2's vantage, live representations of target users and buyers are the input
 
 **Status:** Inherited · by reference
 
-**Basis:** STD-SHARED-INTELLIGENCE v1.2 · 2026-10-16 (SDLC release v1.4.1), by reference. Levels, transitions, verifications, and sustainment are rendered here from the standard at its tag and are edited only there
+**Basis:** STD-SHARED-INTELLIGENCE v1.2 · 2026-10-16 (SDLC release v1.4.1), github.com/superdtf-0882/ai-native-sdlc-maturity-model/shared_intelligence_layer.md, by reference. Levels, transitions, verifications, and sustainment are rendered here from the standard at its tag and are edited only there
 
 ### A — Nascent
 
@@ -552,7 +552,7 @@ A continuous two-way loop connects market-response evidence to authorized adjust
 
 **Status:** Inherited · by reference
 
-**Basis:** STD-EA-MM D10 Shared language (Vocabula) at v1.1.2 (model text v1.1.1), by reference. Levels, transitions, verifications, and sustainment are rendered here from the source at its tag and are edited only there; the vantage paragraph at E is this model's
+**Basis:** STD-EA-MM D10 Shared language (Vocabula) at v1.1.2 (model text v1.1.1), github.com/superdtf-0882/ai-native-ea-maturity-model, by reference. Levels, transitions, verifications, and sustainment are rendered here from the source at its tag and are edited only there; the vantage paragraph at E is this model's
 
 ### A — Nascent
 

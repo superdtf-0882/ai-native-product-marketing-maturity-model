@@ -29,7 +29,7 @@ dimensions:
 
   D5:
     title: "Messaging, content & proof"
-    flag: "the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from."
+    flag: "The upper levels await validation against larger organizations than the one their first drafts came from."
     levels:
       A: "Asset by asset; claims and wording drift."
       B: "Owned framework; claims and translated terms have approved wording."
@@ -39,7 +39,7 @@ dimensions:
 
   D6:
     title: "Sales & partner enablement"
-    flag: "the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from."
+    flag: "The upper levels await validation against larger organizations than the one their first drafts came from."
     levels:
       A: "Event-driven kits; stale personal copies."
       B: "Standard kit on a cadence; usage unmeasured."
@@ -49,7 +49,7 @@ dimensions:
 
   D7:
     title: "Launch communication & readiness"
-    flag: "the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from."
+    flag: "The upper levels await validation against larger organizations than the one their first drafts came from."
     levels:
       A: "Ad hoc launches; readiness unknown."
       B: "Tiers, checklist, manual go or no-go."
@@ -59,7 +59,7 @@ dimensions:
 
   D8:
     title: "Customer adoption communication"
-    flag: "the upper levels of D5–D8 await validation against larger organizations than the one their first drafts came from."
+    flag: "The upper levels await validation against larger organizations than the one their first drafts came from."
     levels:
       A: "Sporadic release notes; reactive education."
       B: "Defined cadence and role-based formats."
@@ -69,7 +69,7 @@ dimensions:
 
   D9:
     title: "Market-response learning"
-    flag: "D9 is informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention."
+    flag: "Informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention."
     levels:
       A: "Anecdotal response; individual AI summaries."
       B: "Scheduled AI-assisted reviews link evidence to context."
