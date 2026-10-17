@@ -1,6 +1,6 @@
 # AI-Native Product Marketing Maturity Model
 
-**Version 1.0.2 — 2026-10-17.** Eleven dimensions, five levels (A–E). D1–D3 inherited by reference from STD-SHARED-INTELLIGENCE v1.2 (SDLC release v1.4.1); D10 inherited by reference from STD-EA-MM D10 at v1.1.2 (model text v1.1.1). The inherited text is rendered here from the sources at their tags. See `CHANGELOG.md`.
+**Version 1.0.3 — 2026-10-17.** Eleven dimensions, five levels (A–E). D1–D3 inherited by reference from STD-SHARED-INTELLIGENCE v1.2 (SDLC release v1.4.1); D10 inherited by reference from STD-EA-MM D10 at v1.1.2 (model text v1.1.1). The inherited text is rendered here from the sources at their tags. See `CHANGELOG.md`.
 
 ## Family maturity names
 
@@ -8,7 +8,7 @@ A — Nascent · B — Modeled · C — Continuous · D — Integral · E — Te
 
 Names, descriptions and the general shape: family_maturity_levels.md in github.com/superdtf-0882/ai-native-sdlc-maturity-model at v1.4.2.
 
-## Family consistency and review boundaries
+## How to read this model
 
 - D1–D3 and D10 are inherited by reference: D1–D3 from STD-SHARED-INTELLIGENCE v1.2, D10 from STD-EA-MM's Shared language. Their text is rendered here from the sources at their tags and is edited only there. D10 carries one vantage paragraph at E, which is this model's; D1–D3's are the standard's.
 
@@ -25,8 +25,6 @@ Names, descriptions and the general shape: family_maturity_levels.md in github.c
 - Shared D1–D3 generate function-specific renderings at E and keep rendering manual at D. D6 and D8 surface current content selected by deal or adoption context at D; that is retrieval from the shared source, not a rendering generated for an audience, which is why it sits at D and not E. D5–D8 measure the quality and operation of their functional outputs, not whether a rendering can be generated.
 
 - Modeled (B) in this family means four things at once: a deliberate method exists, it is manual, it is owned by one function, and the AI-assisted part of it follows a consistent method. The B cells of D4–D9 and D11 carry all four so that an AI-native B can be told from a pre-AI one. D10's B is the source model's.
-
-- Flag: D9: Informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention.
 
 - D9 is scored on how response evidence is gathered, linked, routed, and acted on, not on how fast the market answers. In calendar-bound markets such as K-12 districts, signal arrives on budget and school-year cycles; market-imposed signal latency is not itself a maturity deficit, and D9-E's "where signals permit" is read in that light.
 
@@ -52,7 +50,10 @@ Names, descriptions and the general shape: family_maturity_levels.md in github.c
 
 - D8 governs outbound guidance that supports adoption; D9 governs what market and customer response teaches. Customer Success owns realized customer outcomes at every level. D8 at E depends on D11 at D, since agents send within delegated authority; the cell cites it in the family's form; see STD-SDLC-MM D10 at D.
 
-- Flag: D5–D8: The upper levels await validation against larger organizations than the one their first drafts came from.
+### Flags
+
+- D9: Informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention.
+- D5–D8: The upper levels await validation against larger organizations than the one their first drafts came from.
 
 ## D1. Market discovery & definition
 
@@ -106,7 +107,7 @@ Converge D1, D2, and D3 as one shared intelligence layer and automate function-s
 
 D1, D2, and D3 operate as one converged intelligence layer that automatically generates function-specific renderings — including Product roadmap and requirements input, Marketing messaging, Sales battlecards, and Strategy narratives — from the same continuously updated model, each adapted to its audience without separate commissioning.
 
-From D1's vantage, market signals, trend data, and opportunity models are the input lens this layer continuously refreshes.
+**Vantage:** From D1's vantage, market signals, trend data, and opportunity models are the input lens this layer continuously refreshes.
 
 **Sustainment:** Verify that automatic renderings accurately reflect the shared intelligence and that no consuming function is silently receiving stale or miscontextualized output. Audit D1–D3 convergence periodically to confirm that the layer is coherent, not merely synchronized.
 
@@ -162,7 +163,7 @@ Converge D1, D2, and D3 as one shared intelligence layer and automate function-s
 
 D1, D2, and D3 operate as one converged intelligence layer that automatically generates function-specific renderings — including Product roadmap and requirements input, Marketing messaging, Sales battlecards, and Strategy narratives — from the same continuously updated model, each adapted to its audience without separate commissioning.
 
-From D2's vantage, live representations of target users and buyers are the input lens this layer continuously refreshes, extending to Engineering through the requirements management system.
+**Vantage:** From D2's vantage, live representations of target users and buyers are the input lens this layer continuously refreshes, extending to Engineering through the requirements management system.
 
 **Sustainment:** Verify that automatically generated persona renderings remain faithful to the underlying intelligence and have not drifted because of stale data, automation bias, or function-specific reinterpretation. Audit D1–D3 convergence periodically.
 
@@ -218,7 +219,7 @@ Converge D1, D2, and D3 as one shared intelligence layer and automate function-s
 
 D1, D2, and D3 operate as one converged intelligence layer that automatically generates function-specific renderings — including Product roadmap and requirements input, Marketing messaging, Sales battlecards, and Strategy narratives — from the same continuously updated model, each adapted to its audience without separate commissioning.
 
-From D3's vantage, positioning, the live competitive landscape, and the organization's strategic differentiation thesis are the input lens this layer continuously refreshes.
+**Vantage:** From D3's vantage, positioning, the live competitive landscape, and the organization's strategic differentiation thesis are the input lens this layer continuously refreshes.
 
 **Sustainment:** Verify that automatic competitive and positioning renderings accurately reflect the underlying intelligence and that the strategic differentiation thesis has not silently drifted through automation or local reinterpretation. Audit D1–D3 convergence periodically.
 
@@ -598,7 +599,7 @@ Instrument both operations: where terms are queried, where they resolve, where a
 
 The vocabulary is a measured instrument. The enterprise can see which distinctions its people operate and which they route around, and corrects the model on that evidence rather than on advocacy. **Terms are retired and merged as readily as they are added.** The outward translation layer is tuned by what external readers actually misread, not by what internal authors assume they will.
 
-From Product Marketing's vantage, the external readers are buyers, the field, and partners; what they are given to read is D5's approved wording, and what they misread arrives through D9.
+**Vantage:** From Product Marketing's vantage, the external readers are buyers, the field, and partners; what they are given to read is D5's approved wording, and what they misread arrives through D9.
 
 **Sustainment:** Reconcile the model against its own usage record on a standing cadence, retiring distinctions nobody operates. Both failure modes are live here: a term that matters only in rare documents reads as dead to a record that counts volume, and one retired on aggregate waivers takes the single function still using it.
 

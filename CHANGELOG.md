@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.3 — 2026-10-17
+
+**Layout only: text-neutral under STD-MODEL-PARTS v1.1.** The matrix takes the family's common form in full (§5.2): the reading rules take the common title, *How to read this model*; the two open questions move from the reading rules' bullets into a `### Flags` section under it, each beginning with its dimensions, word for word as v1.0.2 worded them; and the four vantage paragraphs at E are marked `**Vantage:**`. The README and the short form's comment point to the Flags section. No word of any level, transition, verification, sustainment, definition, reading rule, threshold state, flag or boundary changed, as the release check's text-neutral test shows against v1.0.2; scores against v1.0.2 are unaffected. Work Item OKF-TOGAF#205.
+
 ## v1.0.2 — 2026-10-17
 
 A wording release under the model family's parts standard (STD-MODEL-PARTS v1.1). No level, transition, verification or sustainment changed, and no score against v1.0.1 is affected.

@@ -17,10 +17,7 @@ The matrix renders their text from those sources at those tags. It is edited onl
 
 ## Open items at v1.0.0
 
-Two questions ship as **visible flags** in the matrix's review boundaries. A flag is not a maturity judgment: the content is accurate as drafted, and the question is open.
-
-- **D9** is informed by the EA model and awaits Product Marketing expert review; attribution, signal latency, and the boundary with demand generation need particular attention.
-- **The upper levels of D5–D8** await validation against larger organizations than the one their first drafts came from.
+Two questions ship as **visible flags**, in the matrix's Flags section under *How to read this model*, on D9 and on D5–D8. A flag is not a maturity judgment: the content is accurate as drafted, and the question is open.
 
 ## Not in this repository
 
@@ -30,7 +27,7 @@ The **scoring instrument** — disqualifiers and appraisal procedure — is a se
 
 Developed in collaboration with Duane Call and Tracy Thayne.
 
-The first drafts of D5–D8 came from practitioner experience at a small, AI-forward K-12 company, contributed in October 2026 and revised through review. Two outside reviews in the same month shaped the released text: one on the family's Modeled test, the status labels and the D4/D11 boundary; one on the customer's place in the model, go-to-market as the grouping of consumers, and leadership and culture as conditions a maturity model does not score. Their open questions are carried as flags in the model's review boundaries.
+The first drafts of D5–D8 came from practitioner experience at a small, AI-forward K-12 company, contributed in October 2026 and revised through review. Two outside reviews in the same month shaped the released text: one on the family's Modeled test, the status labels and the D4/D11 boundary; one on the customer's place in the model, go-to-market as the grouping of consumers, and leadership and culture as conditions a maturity model does not score. Their open questions are carried as flags in the matrix's Flags section.
 
 ## Licence
 

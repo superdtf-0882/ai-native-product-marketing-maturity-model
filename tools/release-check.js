@@ -413,7 +413,13 @@ async function checkRelease(root, opts) {
         const tsText = (x) => J([x.thresholdStates.preAI, x.thresholdStates.exempt]);
         if (tsText(m) !== tsText(B)) diffs.push("thresholdStates");
         const priorSf = git(opts.against, "short_form.yml");
-        const flagSet = (x, sfT) => J(x.flags.length ? x.flags.map((f) => f.scope + ": " + f.text).sort() : Object.entries(shortFormFlags(sfT)).map(([k, v]) => k + ": " + v).sort());
+        // Flags, dimension by dimension (431-CC): a matrix flag on a range is the same flag on each
+        // dimension in it, so a range in a new Flags section matches the short form's per-dimension copies.
+        const perDim = (x) => x.flags.flatMap((f) => {
+          const ids = x.dimensions.filter((d) => inScope(f.scope, d.id)).map((d) => d.id);
+          return ids.length ? ids.map((id) => id + ": " + f.text) : [f.scope + ": " + f.text];
+        });
+        const flagSet = (x, sfT) => J(x.flags.length ? perDim(x).sort() : Object.entries(shortFormFlags(sfT)).map(([k, v]) => k + ": " + v).sort());
         if (priorSf !== null && flagSet(m, sfText) !== flagSet(B, priorSf)) diffs.push("flags");
         if (priorSf !== null && J(shortForm(sfText || "").dims) !== J(shortForm(priorSf).dims)) diffs.push("short-form cells");
         if (priorSf === null) notes.push("could not read short_form.yml at " + opts.against + "; its cells and flags were not compared");
