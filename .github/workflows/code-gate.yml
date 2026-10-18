@@ -1,0 +1,28 @@
+# The code gate's workflow -- WP-D6-06, OKF-TOGAF#160. SOURCE OF RECORD: OKF-TOGAF's
+# tools/code-gate/code-gate.yml; each gated repository carries it as .github/workflows/code-gate.yml,
+# beside its copy of the gate at tools/code-gate.cjs (.cjs, so it runs where package.json says type module).
+#
+# It runs on every push, as a report: the gate's counts go to the run's summary page, and the run fails
+# only if the gate itself cannot run. Read access to the contents and nothing else; no secret; each
+# action named by its full commit (229-DT2 section 2.3). Installing packages runs no package script, and
+# a failed install leaves the gate to report that its linter could not run.
+name: code-gate
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Install packages, running no package script
+        if: hashFiles('package-lock.json') != ''
+        continue-on-error: true
+        run: npm ci --ignore-scripts
+      - name: Code gate (report only)
+        run: node tools/code-gate.cjs . --report --summary "$GITHUB_STEP_SUMMARY"
