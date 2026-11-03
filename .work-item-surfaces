@@ -18,4 +18,4 @@
 # Work-Item: de-minimis on a commit touching one of them -- tooling is never
 # de minimis. A projection WITHOUT this field refuses the mark on an enforced
 # surface: fail closed, the opposite direction from the fourth field.
-ai-native-product-marketing-maturity-model	-	true	false	tools/
+ai-native-product-marketing-maturity-model	-	true	false	tools/,.github/
