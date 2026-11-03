@@ -5,7 +5,9 @@
 // (tools/code-gate/code-gate.yml) on every push, and tools/code-gate/copies.js holds each copy to this
 // file. It is the sites' gate (aimaturitymodels' scripts/code-gate.js, 371-CC), made to run anywhere:
 //
-//   SECRETS, by the sites' patterns: file, line and kind, never the value.
+//   SECRETS, by the sites' patterns: file, line and kind, never the value. In a code file an unquoted
+//     name, property read or call is not a value (418-DT2); a line the repository marks known safe is
+//     reported as such, by its reason (MARKS_FILE).
 //   THE CODE CHECK: where a lint config runs, the linter's counts; otherwise, or where the linter cannot
 //     run, a parse of every .js, .cjs and .mjs file by Node and of every .py file by Python where
 //     Python is found. A file it cannot parse -- .ts, .tsx, .jsx, JSX inside a .js file, or .py without
@@ -20,8 +22,10 @@
 //
 // HOW IT CAN BE CROSSED (RULE-10, declared): a secret in a shape no pattern knows passes; a secret split
 // across lines passes; a file skipped is not checked, though it is named; anyone who can push can edit a
-// repository's copy, which copies.js then names as differing. GitHub's own secret scanning is a second,
-// separate stop in the public repositories (WP-D6-06 activity 2).
+// repository's copy, which copies.js then names as differing. A marked line is reported as known safe,
+// not as a secret, and would pass if --refuse-secrets were given; anyone who can push can add a mark.
+// GitHub's own secret scanning is a second, separate stop in the public repositories (WP-D6-06
+// activity 2).
 //
 // Usage: node tools/code-gate.cjs <root> [--report] [--refuse-secrets] [--summary <file>]
 "use strict";
@@ -59,7 +63,16 @@ function walk(root, onFile) {
   go(root);
 }
 
-function kindsIn(line) {
+// In a code file an unquoted value after an assignment is an expression: a name, a property read or a
+// call holds nothing of its own, as an environment-variable read doesn't (418-DT2 section 2). Only in these files,
+// and only for the assign kind; an unquoted value in .env, YAML, TOML, INI, shell or Markdown is a literal.
+// The scan cannot see a string or a comment, so a bare name stays a flag (a key can be shaped like one),
+// and so does a name right after ? & # or /, as in a URL's query (419-DT2).
+const CODE_FILE = /\.(js|cjs|mjs|jsx|ts|tsx)$/i;
+const EXPRESSION = /^[A-Za-z_$][\w$]*(?:\??\.[A-Za-z_$][\w$]*)*(?:\??\.[A-Za-z_$][\w$]*|[[(].*)$/;
+const IN_URL = /[?&#/]$/;
+
+function kindsIn(line, file) {
   const kinds = [];
   for (const { kind, re } of SHAPES) if (re.test(line)) kinds.push(kind);
   for (const { kind, re } of ASSIGNS) {
@@ -67,6 +80,7 @@ function kindsIn(line) {
     let m;
     while ((m = re.exec(line))) {
       if (/^process\.env\b/.test(m[3])) continue; // names a variable, holds nothing
+      if (kind === "assign" && file && CODE_FILE.test(file) && !/["']\s*$/.test(m[2]) && EXPRESSION.test(m[3]) && !IN_URL.test(line.slice(0, m.index))) continue; // an expression, holds nothing
       kinds.push(kind);
       break;
     }
@@ -83,10 +97,49 @@ function scanSecrets(root) {
     let text;
     try { text = fs.readFileSync(full, "utf8"); } catch { return; }
     if (text.includes("\u0000")) return;
-    text.split(/\r?\n/).forEach((line, i) => { for (const kind of kindsIn(line)) hits.push({ file: rel(root, full), line: i + 1, kind }); });
+    text.split(/\r?\n/).forEach((line, i) => { for (const kind of kindsIn(line, name)) hits.push({ file: rel(root, full), line: i + 1, kind }); });
   });
   return hits;
 }
+
+// THE KNOWN-SAFE MARK (418-DT2 section 1). A repository's own list, at MARKS_FILE under its root: each
+// entry names a path, the kind, a hash of the line's whole text, a reason citing the brief that
+// classified the line, and who marked it. A flag on a line whose path, kind and hash match is reported
+// as known safe, not as a secret. A changed line stops matching and flags again; an entry whose line is
+// gone is reported as stale. A list that cannot be read, or has an entry missing a field, marks nothing.
+const MARKS_FILE = "tools/code-gate.known-safe.json";
+const lineHash = (text) => require("crypto").createHash("sha256").update(text, "utf8").digest("hex");
+
+function readMarks(root) {
+  const full = path.join(root, MARKS_FILE);
+  if (!fs.existsSync(full)) return { marks: [] };
+  try {
+    const marks = JSON.parse(fs.readFileSync(full, "utf8")).marks;
+    if (!Array.isArray(marks)) throw new Error("no marks list");
+    for (const e of marks) for (const f of ["path", "kind", "line_sha256", "reason", "by"]) if (!e || typeof e[f] !== "string" || !e[f]) throw new Error("an entry has no " + f);
+    return { marks };
+  } catch (e) {
+    return { marks: [], error: String(e.message || e).split("\n")[0] };
+  }
+}
+
+function applyMarks(root, hits, marks) {
+  const linesOf = {};
+  const lines = (p) => {
+    if (!(p in linesOf)) { try { linesOf[p] = fs.readFileSync(path.join(root, p), "utf8").split(/\r?\n/); } catch { linesOf[p] = null; } }
+    return linesOf[p];
+  };
+  const safe = [], open = [];
+  for (const h of hits) {
+    const p = h.file.replace(/\\/g, "/");
+    const text = (lines(h.file) || [])[h.line - 1];
+    const e = text === undefined ? null : marks.find((x) => x.path === p && x.kind === h.kind && x.line_sha256 === lineHash(text));
+    if (e) safe.push(Object.assign({}, h, { reason: e.reason, by: e.by })); else open.push(h);
+  }
+  const stale = marks.filter((e) => !(lines(e.path) || []).some((t) => lineHash(t) === e.line_sha256));
+  return { hits: open, safe, stale };
+}
+
 const formatSecrets = (hits) => hits.map((h) => "  " + h.file + ":" + h.line + "  " + h.kind).join("\n");
 const exitFor = (hits, opts) => ((opts && opts.refuseSecrets) && hits.length ? 1 : 0);
 
@@ -187,9 +240,13 @@ function runGate(root, opts) {
   const lines = [];
   const say = (s) => { lines.push(s); console.log(s); };
   say("CODE GATE (WP-D6-06, OKF-TOGAF#160) -- " + (opts.refuseSecrets ? "a found secret refuses" : "report only, nothing refuses"));
-  const hits = scanSecrets(root);
+  const M = readMarks(root);
+  if (M.error) say("MARKS: not read -- " + M.error + "; nothing is marked.");
+  const { hits, safe, stale } = applyMarks(root, scanSecrets(root), M.marks);
   if (hits.length) { say("SECRETS: " + hits.length + " found. File, line and kind; the value is never printed:"); say(formatSecrets(hits)); }
   else say("SECRETS: none found.");
+  if (safe.length) { say("KNOWN SAFE: " + safe.length + " marked line(s), by " + MARKS_FILE + ":"); say(safe.map((h) => "  " + h.file + ":" + h.line + "  " + h.kind + "  " + h.reason).join("\n")); }
+  if (stale.length) { say("STALE MARKS: " + stale.length + ", whose line is gone:"); say(stale.map((e) => "  " + e.path + "  " + e.kind + "  " + e.reason).join("\n")); }
   const C = codeCheck(root, opts);
   if (C.mode === "lint") say("CODE CHECK (lint): " + C.errors + " error(s), " + C.warnings + " warning(s) in " + C.files + " file(s).");
   else {
@@ -202,15 +259,18 @@ function runGate(root, opts) {
   if (opts.summary) {
     const md = ["### Code gate (WP-D6-06, OKF-TOGAF#160)", "", "| Check | Result |", "|---|---|",
       "| Secrets | " + (hits.length ? hits.length + " found: " + hits.map((h) => "`" + h.file + ":" + h.line + "` " + h.kind).join(", ") : "none found") + " |",
+      ...(safe.length ? ["| Known safe | " + safe.length + " marked: " + safe.map((h) => "`" + h.file + ":" + h.line + "` " + h.kind).join(", ") + " |"] : []),
+      ...(stale.length ? ["| Stale marks | " + stale.length + ": " + stale.map((e) => "`" + e.path + "` " + e.kind).join(", ") + " |"] : []),
+      ...(M.error ? ["| Marks | not read: " + M.error + " |"] : []),
       "| Code check (" + C.mode + ") | " + (C.mode === "lint" ? C.errors + " error(s), " + C.warnings + " warning(s) in " + C.files + " file(s)" : C.checked + " parsed, " + C.problems.length + " do not parse, " + C.skipped.length + " skipped" + (C.lintNote ? "; " + C.lintNote : "")) + " |",
       ...(A.length ? A.map((a) => "| Dependency audit (" + a.dir + ") | " + (a.state === "read" ? a.total + ": critical " + a.critical + ", high " + a.high + ", moderate " + a.moderate + ", low " + a.low : "not read") + " |") : ["| Dependency audit | no lockfile |"]),
       "", "Report only: " + (opts.refuseSecrets ? "a found secret refuses." : "nothing refuses.") + " A secret is named by file, line and kind, never its value.", ""];
     fs.appendFileSync(opts.summary, md.join("\n"));
   }
-  return { exit: exitFor(hits, opts), hits, code: C, audit: A, lines };
+  return { exit: exitFor(hits, opts), hits, safe, stale, code: C, audit: A, lines };
 }
 
-module.exports = { scanSecrets, formatSecrets, exitFor, kindsIn, findPython, parseCheck, codeCheck, auditAll, runGate, SKIP_DIRS };
+module.exports = { scanSecrets, formatSecrets, exitFor, kindsIn, findPython, parseCheck, codeCheck, auditAll, runGate, SKIP_DIRS, MARKS_FILE, lineHash, readMarks, applyMarks };
 
 if (require.main === module) {
   const args = process.argv.slice(2);
