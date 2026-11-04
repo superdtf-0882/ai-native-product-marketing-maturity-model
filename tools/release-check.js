@@ -13,10 +13,12 @@
 //     dimension inherited by reference takes its cells from its source;
 //   - the licence and the Work Item surfaces line are present.
 //
-// It needs nothing installed. Exit 1 on any problem, each one named.
+// It needs nothing installed. Exit 1 on any problem, each one named. With --tag, exit 2 when
+// nothing is at fault but something could not be read: that isn't a pass, and a fault's exit
+// wins when both appear. Exit 2 here is not the usage exit it is in other tools.
 //
 // Given the tag being cut (--tag v1.5.0), it also runs the family standard's tests,
-// STD-MODEL-PARTS v1.1 §7.1 items 1-7, through the family parser beside it: see
+// STD-MODEL-PARTS v1.2 §7.1 items 1-7, through the family parser beside it: see
 // checkRelease below.
 "use strict";
 const fs = require("fs");
@@ -114,7 +116,7 @@ function check(root, opts) {
 }
 
 // ---------------------------------------------------------------------------
-// STD-MODEL-PARTS v1.1 §7.1, items 1-7 (OKF-TOGAF#205): the tests the family standard
+// STD-MODEL-PARTS v1.2 §7.1, items 1-7 (OKF-TOGAF#205): the tests the family standard
 // adds, run with the tag being cut. They read the matrix through the family parser,
 // tools/model-parser.js, which sits beside this file in every model repository.
 //
@@ -128,7 +130,7 @@ function check(root, opts) {
 // It reads two things it does not hold. The homes of shared text -- the family file, a
 // rendered dimension's source, a threshold-state source -- by their public address at the
 // cited tag; and the cited and earlier commits through git. Each read FAILS CLOSED: what
-// it cannot read, it cannot prove, and it says so as a problem. --home supplies an address
+// it cannot read, it cannot prove, and it says so apart from a problem, in `unread`. --home supplies an address
 // for a basis line that names none, for a run; the missing address is still reported.
 const MARKERS = /^(### [A-E] — |\*\*Level [A-E]\b|\*\*Transition |### [A-E] → [A-E]|\*\*Verification:\*\*|\*\*Sustainment)/;
 const FAMILY_REPO = /github\.com\/superdtf-0882\/(ai-native-[a-z0-9-]+-maturity-model)(?:\/([\w.-]+\.md))?/;
@@ -216,11 +218,87 @@ function hardWraps(md) {
   return out;
 }
 
+// §6, text the parser reads into no field (445-CC; DT2's suggestion there). Each paragraph of a
+// matrix, its markers set aside, is looked for among the paragraphs of the fields the family parser
+// read; what is found nowhere, no check compares, so a release names it. A version line, a heading
+// and a rule are layout. A paragraph not found whole is read line by line, since the names line and
+// its pointer are two lines with no blank between them. Returns [{ heading, lines }], consecutive
+// unread paragraphs under one heading together; heading null is the opening, before any section.
+const UNREAD_MARKER_ONLY = [/^\*\*Level [A-E](?: — [^*]+)?\*\*$/, /^\*\*Sustainment\*\*$/];
+const UNREAD_PREFIX = /^\*\*(Verification|Sustainment|Vantage|Indicative evidence|Status|Basis|Definition):\*\*\s*/;
+const UNREAD_TRANSITION = [/^\*\*Transition ([A-E]) → ([A-E])(?: — (.+?))?\*\*$/, /^\*\*Transition from ([A-E]) to ([A-E])\*\*(?: — (.+))?$/];
+const UNREAD_VERSION = [/^\*\*Version \d+\.\d+\.\d+ — /, /^\*\*STD-[A-Z0-9-]+ · v/];
+function unreadText(md, MP) {
+  const m = MP.parseModel(md);
+  const have = new Set();
+  const add = (s) => { if (s != null) for (const p of String(s).split("\n\n")) have.add(p.trim()); };
+  add(m.title); add(m.namesLine);
+  if (m.namesSection) m.namesSection.lines.forEach((l) => add(l.trim()));
+  for (const k of ["readingRules", "boundaries", "provenance"]) if (m[k]) add(m[k].text);
+  const ts = m.thresholdStates || {};
+  add(ts.line);
+  for (const k of ["preAI", "exempt"]) if (ts[k] && ts[k].text) add(ts[k].text);
+  for (const f of m.flags) { add(f.text); add(f.scope + ": " + f.text); add("- " + f.scope + ": " + f.text); }
+  for (const d of m.dimensions) {
+    add(d.name); add(d.definition); add(d.statusText); if (d.basis) add(d.basis.text);
+    for (const v of Object.values(d.levels || {})) add(v);
+    for (const t of Object.values(d.transitions || {})) { add(t.title); add(t.text); add(t.verification); }
+    add(d.sustainment); add(d.vantage); add(d.readingNotes);
+    for (const v of Object.values(d.indicativeEvidence || {})) add(v);
+  }
+  // The matrix's paragraphs with the line each starts on, by the parser's own rule.
+  const lines = md.replace(/\r\n/g, "\n").split("\n");
+  const paras = [];
+  let start = -1, cur = [];
+  const flush = () => { if (cur.length) paras.push({ line: start + 1, text: MP.paragraphs(cur)[0], raw: cur.slice() }); cur = []; };
+  lines.forEach((l, i) => {
+    if (!l.trim()) { flush(); return; }
+    if (/^#{1,6} /.test(l)) { flush(); paras.push({ line: i + 1, heading: l.replace(/^#+\s*/, "").trim(), level: /^#+/.exec(l)[0].length }); return; }
+    if (/^-{3,}$/.test(l.trim())) { flush(); return; }
+    if (/^\|/.test(l)) { flush(); paras.push({ line: i + 1, row: l }); return; }
+    if (/^\s*(?:[-*+]|\d+[.)])\s/.test(l)) flush();
+    if (!cur.length) start = i;
+    cur.push(l);
+  });
+  flush();
+  const read = (t) => {
+    const s = t.replace(UNREAD_PREFIX, "");
+    if (!s || have.has(s) || have.has(t)) return true;
+    return /^\*[^*]/.test(s) && /[^*]\*$/.test(s) && have.has(s.slice(1, -1));
+  };
+  const out = [];
+  let heading = null;
+  const miss = (p) => {
+    const g = out[out.length - 1];
+    if (g && g.heading === heading) g.lines.push(p.line); else out.push({ heading, lines: [p.line] });
+  };
+  const cellsOf = (row) => row.trim().replace(/^\|/, "").replace(/\|$/, "").split(/(?<!\\)\|/).map((c) => c.trim());
+  const separator = (p) => !!(p && p.row && cellsOf(p.row).every((c) => /^[-: ]*$/.test(c)));
+  for (let k = 0; k < paras.length; k++) {
+    const p = paras[k];
+    if (p.heading !== undefined) { heading = p.level === 1 ? null : p.heading; continue; }
+    if (p.row) {
+      // A table's header row, the one above its separator, is layout, as a heading is.
+      const cells = cellsOf(p.row);
+      if (separator(p) || separator(paras[k + 1])) continue;
+      const level = /^[A-E]\b/.test(cells[0]);
+      if (cells.slice(level ? 1 : 0).some((c) => c && !/^[—–-]$/.test(c) && !have.has(c))) miss(p);
+      continue;
+    }
+    if (UNREAD_VERSION.some((r) => r.test(p.text)) || UNREAD_MARKER_ONLY.some((r) => r.test(p.text))) continue;
+    const tr = UNREAD_TRANSITION.map((r) => r.exec(p.text)).find(Boolean);
+    if (tr) { if (tr[3] && !have.has(tr[3].trim())) miss(p); continue; }
+    if (read(p.text) || p.raw.every((l) => read(l.trim()))) continue;
+    miss(p);
+  }
+  return out;
+}
+
 async function checkRelease(root, opts) {
   opts = opts || {};
   const base = check(root, opts);
-  const problems = base.problems.slice(), pending = [], warnings = [], notes = [];
-  const out = { problems, pending, warnings, notes, version: base.version, matrix: base.matrix, migrated: false, dialect: null };
+  const problems = base.problems.slice(), unread = [], pending = [], warnings = [], notes = [];
+  const out = { problems, unread, pending, warnings, notes, version: base.version, matrix: base.matrix, migrated: false, dialect: null };
   let MP;
   try { MP = require("./model-parser.js"); } catch (e) { problems.push("tools/model-parser.js, the family parser, did not load beside this check: " + e.message.split("\n")[0]); return out; }
   if (!base.matrix) return out;
@@ -266,7 +344,7 @@ async function checkRelease(root, opts) {
   if (sf && /^[0-9a-f]{40}$/.test(sf.commit || "")) {
     for (const f of [base.matrix].concat(layers)) {
       const at = git(sf.commit, f);
-      if (at === null) problems.push("could not read " + f + " at the short form's cited commit " + sf.commit.slice(0, 7) + ", so the citation cannot be proved (§4C; fails closed)");
+      if (at === null) unread.push("could not read " + f + " at the short form's cited commit " + sf.commit.slice(0, 7) + ", so the citation cannot be proved (§4C; fails closed)");
       else if (norm(at) !== norm(readIf(path.join(root, f)))) problems.push(f + " at the short form's cited commit " + sf.commit.slice(0, 7) + " differs from the tag's; cite a commit where it is byte-identical (§4C)");
     }
   }
@@ -291,7 +369,7 @@ async function checkRelease(root, opts) {
     if (extra.length) problems.push("the names section holds more than the names line and the pointer: \"" + extra[0].slice(0, 70) + "\"" + (extra.length > 1 ? " and " + (extra.length - 1) + " more line(s)" : "") + " (M3)");
     if (pointer && m.namesLine) {
       const fam = await readAt(pointer[1], pointer[2], "family_maturity_levels.md");
-      if (fam === null) problems.push("could not read family_maturity_levels.md in " + pointer[1] + " at " + pointer[2] + ", so the names line cannot be compared (M3; fails closed)");
+      if (fam === null) unread.push("could not read family_maturity_levels.md in " + pointer[1] + " at " + pointer[2] + ", so the names line cannot be compared (M3; fails closed)");
       else if (MP.parseFamily(fam).namesLine !== m.namesLine) problems.push("the names line differs from the family file's at " + pointer[2] + " (M3, §3.6)");
     }
   }
@@ -301,13 +379,13 @@ async function checkRelease(root, opts) {
   if (ts.preAI && ts.preAI.source) {
     const s = ts.preAI.source;
     const src = await fetchText(rawUrl(s.repository, s.tag, matrixFileOf(s.repository)));
-    if (src === null) problems.push("could not read the Pre-AI and Exempt source, " + s.repository + " at " + s.tag + ", so the two texts cannot be resolved (§4A; fails closed)");
+    if (src === null) unread.push("could not read the Pre-AI and Exempt source, " + s.repository + " at " + s.tag + ", so the two texts cannot be resolved (§4A; fails closed)");
     else {
       const S = MP.parseModel(src);
       if (!(S.thresholdStates.preAI && S.thresholdStates.preAI.text && S.thresholdStates.exempt && S.thresholdStates.exempt.text)) problems.push("the Pre-AI and Exempt source, " + s.repository + " at " + s.tag + ", has no Pre-AI and Exempt sections of its own (§4A)");
     }
   } else if (!(ts.preAI && ts.exempt)) problems.push("Pre-AI and Exempt: neither the model's own two sections, nor a source line, nor the line saying it scores A to E only (M5, §4A)");
-  for (const f of [["README.md", "README.md"], ["tools/release-check.js", "the release check"], ["tools/model-parser.js", "the family parser, tools/model-parser.js"], ["tools/hooks/commit-msg", "the Work Item hook, tools/hooks/commit-msg"]]) {
+  for (const f of [["README.md", "README.md"], ["tools/release-check.js", "the release check"], ["tools/release.js", "the release command, tools/release.js"], ["tools/hooks/pre-push", "the push hook, tools/hooks/pre-push"], ["tools/model-parser.js", "the family parser, tools/model-parser.js"], ["tools/hooks/commit-msg", "the Work Item hook, tools/hooks/commit-msg"]]) {
     if (!fs.existsSync(path.join(root, f[0]))) problems.push("missing: " + f[1] + " (M10)");
   }
 
@@ -366,7 +444,7 @@ async function checkRelease(root, opts) {
     if (!tag) { problems.push(d.id + ": the basis line names no release tag for its home (§4B)"); continue; }
     const file = addr[2] || matrixFileOf(addr[1]);
     const text = await readAt(addr[1], tag, file);
-    if (text === null) { problems.push(d.id + ": could not read its home, " + addr[1] + "/" + file + " at " + tag + ", so the copy cannot be checked (§10; fails closed)"); continue; }
+    if (text === null) { unread.push(d.id + ": could not read its home, " + addr[1] + "/" + file + " at " + tag + ", so the copy cannot be checked (§10; fails closed)"); continue; }
     const h = MP.parseModel(text).dimensions.find((x) => x.id === d.id);
     if (!h || !h.levels) { problems.push(d.id + ": its home, " + addr[1] + "/" + file + " at " + tag + ", has no " + d.id + " to compare with (§10)"); continue; }
     const fields = [["definition", (x) => x.definition], ["sustainment", (x) => x.sustainment]];
@@ -386,11 +464,14 @@ async function checkRelease(root, opts) {
   // Item 6 (§6): text-neutral, against the earlier tag.
   if (opts.against) {
     const prior = git(opts.against, base.matrix);
-    if (prior === null) problems.push("could not read " + base.matrix + " at " + opts.against + ", so the text-neutral comparison cannot run (§6; fails closed)");
+    if (prior === null) unread.push("could not read " + base.matrix + " at " + opts.against + ", so the text-neutral comparison cannot run (§6; fails closed)");
     else {
       const B = MP.parseModel(prior);
       const diffs = [];
-      if (B.dimensions.some((d) => d.dialect === "table")) problems.push(opts.against + " is a table model; the family parser cannot read it yet, so text-neutral cannot be proved against it (§6)");
+      // A table dimension is read by its header row (433-CC); one the parser could not read whole
+      // still fails closed.
+      const unread = B.dimensions.filter((d) => d.dialect === "table" && !MP.LEVELS.every((L) => d.levels && d.levels[L]));
+      if (unread.length) problems.push(opts.against + "'s table dimension(s) " + unread.map((d) => d.id).join(", ") + " could not be read whole, so text-neutral cannot be proved against it (§6)");
       else {
         const ids = (x) => x.dimensions.map((d) => d.id).join(",");
         if (ids(B) !== ids(m)) diffs.push("the dimension set or order");
@@ -445,10 +526,23 @@ async function checkRelease(root, opts) {
     if (ids.length >= 2) warnings.push(base.matrix + " L" + (i + 1) + " lists " + ids.length + " standards (" + ids.join(", ") + "); a model does not list its siblings (§3.7)");
     if (COUNT.test(l)) warnings.push(base.matrix + " L" + (i + 1) + " counts the family's models or dimensions; a model does not count its siblings (§3.7)");
   });
+
+  // §6: text the parser reads into no field, in the matrix and each layer, warned about and never
+  // refused (445-CC).
+  for (const f of [base.matrix].concat(layers)) {
+    for (const g of unreadText(f === base.matrix ? md : readIf(path.join(root, f)), MP)) {
+      const shown = g.lines.slice(0, 8).map((n) => "L" + n).join(", ") + (g.lines.length > 8 ? " and " + (g.lines.length - 8) + " more" : "");
+      warnings.push(f + " " + shown + ": " + g.lines.length + " paragraph(s) " + (g.heading ? "under \"" + g.heading + "\"" : "in the opening, before the first section") +
+        " read into no field, so no check compares them (§6)");
+    }
+  }
   return out;
 }
 
-module.exports = { check, checkRelease, dimensions, shortForm };
+// 0 a pass; 1 a fault, which wins; 2 nothing at fault, but something could not be read.
+const exitFor = (r) => (r.problems.length ? 1 : (r.unread || []).length ? 2 : 0);
+
+module.exports = { check, checkRelease, exitFor, dimensions, shortForm };
 
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -460,7 +554,7 @@ if (require.main === module) {
   if (!tag) {
     const r = check(root);
     console.log("RELEASE CHECK -- " + (r.matrix || "no matrix") + (r.version ? " at v" + r.version : ""));
-    console.log("  (the present tests only; give --tag <the tag being cut> for STD-MODEL-PARTS v1.1's)");
+    console.log("  (the present tests only; give --tag <the tag being cut> for STD-MODEL-PARTS v1.2's)");
     if (r.problems.length) { r.problems.forEach((p) => console.log("  PROBLEM  " + p)); console.log(r.problems.length + " problem(s). Fix them before tagging."); }
     else console.log("  Nothing found by the present tests.");
     process.exitCode = r.problems.length ? 1 : 0;
@@ -468,11 +562,12 @@ if (require.main === module) {
     checkRelease(root, { tag, against: opt("--against"), homes }).then((r) => {
       console.log("RELEASE CHECK -- " + (r.matrix || "no matrix") + (r.version ? " at v" + r.version : "") + ", for " + tag + "; " + (r.migrated ? "migrated" : "not yet migrated") + " to STD-MODEL-PARTS");
       r.problems.forEach((p) => console.log("  PROBLEM  " + p));
+      r.unread.forEach((p) => console.log("  UNREAD   " + p));
       r.pending.forEach((p) => console.log("  PENDING  " + p));
       r.warnings.forEach((p) => console.log("  WARNING  " + p));
       r.notes.forEach((p) => console.log("  NOTE     " + p));
-      console.log(r.problems.length ? r.problems.length + " problem(s). Fix them before tagging " + tag + "." : "No problem. Ready to tag " + tag + (r.pending.length ? "; " + r.pending.length + " item(s) wait for the migration release." : "."));
-      process.exitCode = r.problems.length ? 1 : 0;
+      console.log(r.problems.length ? r.problems.length + " problem(s). Fix them before tagging " + tag + "." : r.unread.length ? r.unread.length + " read(s) failed, so this isn't a pass. Nothing was found at fault." : "No problem. Ready to tag " + tag + (r.pending.length ? "; " + r.pending.length + " item(s) wait for the migration release." : "."));
+      process.exitCode = exitFor(r);
     });
   }
 }

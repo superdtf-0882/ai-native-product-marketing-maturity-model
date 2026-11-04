@@ -1,0 +1,9 @@
+#!/bin/sh
+# Pre-push hook for a maturity model repository. It runs only where
+# core.hooksPath is set to tools/hooks. Every rule is in tools/release.js, so
+# the hook and the command can't drift: it hands the push there and takes the
+# exit. Any exit but zero refuses, and that includes node being missing.
+#
+# HOW IT CAN BE CROSSED (RULE-10): tools/release.js says, in its header.
+# OKF-TOGAF#209.
+exec node "$(git rev-parse --show-toplevel)/tools/release.js" --hook "$@"
