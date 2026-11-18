@@ -15,9 +15,10 @@
 
 # RE-VERIFIED 2026-10-17 against f9018d6 (the text commit of v1.0.2): the seven native dimensions' cells unchanged from v1.0.1; the D5-D8 and D9 flags worded with the matrix's, as the matrix's review boundaries carry them.
 # RE-VERIFIED 2026-10-17 against 786e9e4 (the text commit of v1.0.3): layout only; the 35 cells and the five flag lines unchanged from v1.0.2.
+# RE-VERIFIED 2026-11-18 against 1dac540 (the text commit of v1.1.0): the 35 cells of the seven native dimensions and the five flag lines unchanged; D1-D3's cells are SDLC's own at v1.5.0.
 version: "1.0.0"
 source_matrix_version: "1.1.0"
-source_matrix_commit: "786e9e4bba7c653d7b99419351902e1dbae89679"
+source_matrix_commit: "1dac540ed0b1ffb076cf68d53d7ec4f24e243d67"
 
 dimensions:
   D4:
