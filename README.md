@@ -10,7 +10,7 @@ Eleven dimensions, each scored on the family's five-level ladder, with a transit
 
 ## Inherited by reference
 
-- **D1–D3** (market discovery, buyer and user personas, positioning and competitive intelligence) are the shared intelligence layer, [`shared_intelligence_layer.md`](https://github.com/superdtf-0882/ai-native-sdlc-maturity-model/blob/v1.4.1/shared_intelligence_layer.md) in the SDLC repository, at its `v1.4.1` tag.
+- **D1–D3** (market discovery, buyer and user personas, positioning and competitive intelligence) are the shared intelligence layer, [`shared_intelligence_layer.md`](https://github.com/superdtf-0882/ai-native-sdlc-maturity-model/blob/v1.5.0/shared_intelligence_layer.md) in the SDLC repository, at its `v1.5.0` tag.
 - **D10** (shared language) is the Enterprise Architecture model's [D10](https://github.com/superdtf-0882/ai-native-ea-maturity-model/blob/v1.1.2/ai_native_ea_maturity_model.md), at its `v1.1.2` tag.
 
 The matrix renders their text from those sources at those tags. It is edited only there. Their short-form cells are the sources' own.

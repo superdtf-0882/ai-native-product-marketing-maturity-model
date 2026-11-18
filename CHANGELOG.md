@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.1.0 — 2026-11-18
+
+**D1–D3 re-rendered from the shared intelligence layer at v1.3, in SDLC `v1.5.0`.** This model renders D1–D3 from STD-SHARED-INTELLIGENCE, which moved from v1.2 to v1.3, ratified by David Facer on 2026-10-18 and released in SDLC `v1.5.0`. D1–D3 now measure how current the intelligence is when a question arrives, not how often it is updated. Eighteen rendered lines change, each the layer's own line at v1.5.0; the D1–D3 block keeps its length, so no line number in the matrix moves. SDLC's `v1.5.0` changelog says what changed in the layer.
+
+**How a score can move:** D1–D3 against this tag are scored with SPEC-D6-SCORE v1.6, by this model's instrument at v1.1; against v1.0.3 and earlier they stay v1.5's, and the two are not comparable, in the three ways SDLC's `v1.5.0` changelog names. D4–D11 are unchanged.
+
+Changed: the version line, the reading note and D1–D3's three basis lines; the eighteen rendered lines; the README's link and tag; the short form's note of where D1–D3's cells come from. Work Item OKF-TOGAF#213.
+
 ## v1.0.3 — 2026-10-17
 
 **Layout only: text-neutral under STD-MODEL-PARTS v1.1.** The matrix takes the family's common form in full (§5.2): the reading rules take the common title, *How to read this model*; the two open questions move from the reading rules' bullets into a `### Flags` section under it, each beginning with its dimensions, word for word as v1.0.2 worded them; and the four vantage paragraphs at E are marked `**Vantage:**`. The README and the short form's comment point to the Flags section. No word of any level, transition, verification, sustainment, definition, reading rule, threshold state, flag or boundary changed, as the release check's text-neutral test shows against v1.0.2; scores against v1.0.2 are unaffected. Work Item OKF-TOGAF#205.
